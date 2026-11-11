@@ -13,7 +13,7 @@ const topics = [
 // ISI MATERI PEMBELAJARAN
 const topicMaterials = [
   {
-    content: `Integral merupakan salah satu konsep kalkulus yang konsepnya kebalikan dari proses turunan. Fungsinya untuk menjumlahkan sesuatu yang sangat kecil-kecil sampai jadi satu kesatuan.
+    content: `Suatu fungsi f (x) disebut sebagai turunan dari suatu fungsi F (x). Jadi F (x) disebut anti turunan dari f (x) pada suatu interval I  jika untuk setiap nilai x di dalam I  berlaku F' (x) = f (x).
 
 Secara sederhana, integral digunakan untuk menghitung luas daerah, volume benda, jarak, dan berbagai permasalahan matematika lainnya.
 
