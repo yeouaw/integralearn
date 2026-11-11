@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IntegraLearn — Ruang Belajar Digital</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main id="loginPage" class="login-page">
+    <section class="login-card">
+      <div class="brand brand-center">
+        <div class="brand-mark">I</div>
+        <div><h1>IntegraLearn</h1><p>Ruang belajar digital</p></div>
+      </div>
+      <div class="login-heading">
+        <span class="eyebrow">SELAMAT DATANG</span>
+        <h2>Masuk ke kelasmu</h2>
+        <p>Pilih jenis akun untuk melanjutkan pembelajaran.</p>
+      </div>
+
+      <div class="role-switch" role="group" aria-label="Pilih jenis akun">
+        <button class="role-btn active" data-role="siswa" type="button">♙ Siswa</button>
+        <button class="role-btn" data-role="guru" type="button">▣ Guru</button>
+      </div>
+
+      <form id="loginForm">
+        <label for="username">Username</label>
+        <input id="username" name="username" autocomplete="username" placeholder="Masukkan username" required>
+        <label for="password">Password</label>
+        <input id="password" name="password" type="password" autocomplete="current-password" placeholder="Masukkan password" required>
+        <p id="loginError" class="error" aria-live="polite"></p>
+        <button class="primary-btn full" type="submit">Masuk <span>→</span></button>
+      </form>
+
+      <div class="demo-info">
+        <strong>Akun untuk mencoba</strong>
+        <p>Siswa: <b>siswa</b> / <b>12345</b></p>
+        <p>Guru: <b>guru</b> / <b>12345</b></p>
+      </div>
+      <p class="login-foot">© 2026 IntegraLearn · Belajar integral jadi lebih mudah</p>
+    </section>
+  </main>
+
+  <div id="appPage" class="app hidden">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-mark">I</div>
+        <div><h1>IntegraLearn</h1><p>Ruang belajar digital</p></div>
+      </div>
+      <div class="school-label">IDENTITAS SEKOLAH</div>
+      <strong class="school-name">SMA / SMK Anda</strong>
+      <nav id="sideNav" class="side-nav"></nav>
+      <button id="logoutBtn" class="logout-btn">↪ Keluar</button>
+    </aside>
+
+    <section class="main-area">
+      <header class="topbar">
+        <div class="crumb">Kelas <span>/</span> <b id="crumbTitle">Beranda</b></div>
+        <div class="profile">
+          <button class="help-btn" title="Bantuan">ⓘ</button>
+          <div id="avatar" class="avatar">S</div>
+          <span id="profileName">Siswa</span>
+        </div>
+      </header>
+      <main class="content">
+        <div id="dashboardView">
+          <section class="hero">
+            <div class="hero-copy">
+              <span class="eyebrow">KELAS MATEMATIKA • SMA/SMK</span>
+              <h2>Belajar integral, <em>selangkah demi selangkah.</em></h2>
+              <p>Pahami konsep, coba latihan, dan pantau perkembangan belajarmu.</p>
+              <button class="primary-btn" data-go="Materi Integral">Mulai belajar <span>→</span></button>
+            </div>
+            <div class="integral-art" aria-hidden="true">
+              <div class="orbit orbit-one"></div><div class="orbit orbit-two"></div>
+              <div class="integral-symbol">∫</div>
+              <div class="formula">∫ f(x) dx = F(x) + C</div>
+              <i class="dot dot-a"></i><i class="dot dot-b"></i>
+            </div>
+          </section>
+
+          <section id="studentStats" class="stats-grid">
+            <article class="stat-card"><div class="stat-icon purple">▤</div><div><small>Materi tersedia</small><h3>8 topik</h3><p>Integral SMA/SMK</p></div></article>
+            <article class="stat-card"><div class="stat-icon blue">✓</div><div><small>Nilai kuis terakhir</small><h3 id="lastScore">—</h3><p id="scoreCaption">Belum ada percobaan</p></div></article>
+            <article class="stat-card"><div class="stat-icon green">◷</div><div><small>Kehadiran</small><h3 id="attendanceCount">0 kali</h3><p>Absensi tercatat di perangkat ini</p></div></article>
+          </section>
+
+          <section id="teacherStats" class="stats-grid hidden">
+            <article class="stat-card"><div class="stat-icon purple">♙</div><div><small>Peserta kelas</small><h3>32 siswa</h3><p>Data contoh kelas</p></div></article>
+            <article class="stat-card"><div class="stat-icon blue">▤</div><div><small>Materi tersedia</small><h3>8 topik</h3><p>Materi integral</p></div></article>
+            <article class="stat-card"><div class="stat-icon green">✓</div><div><small>Tugas terkumpul</small><h3>24 tugas</h3><p>Data contoh pengumpulan</p></div></article>
+          </section>
+
+          <section class="lower-grid">
+            <article class="panel continue-panel">
+              <div class="panel-heading"><div><h3 id="lowerTitle">Lanjutkan pembelajaran</h3><p id="lowerSubtitle">Materi yang bisa kamu pelajari hari ini</p></div><button class="text-btn" data-go="Materi Integral">Lihat semua →</button></div>
+              <div id="topicPreview" class="topic-preview"></div>
+            </article>
+            <article class="panel progress-panel">
+              <h3 id="progressTitle">Progres belajar</h3><p>Catatan di browser ini</p>
+              <div class="progress-ring"><strong id="progressPercent">0%</strong></div>
+              <small id="progressCaption">Belum ada materi yang ditandai selesai</small>
+            </article>
+          </section>
+        </div>
+        <section id="pageView" class="panel page-view hidden"></section>
+      </main>
+    </section>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>
