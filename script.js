@@ -3,10 +3,18 @@ const topics = [
   "Sifat-Sifat Integral", "Integral Substitusi", "Integral Parsial",
   "Integral Tentu", "Luas Daerah dan Aplikasi Integral"
 ];
-const topicMaterials = [
+const materiIsi = [
   {
-    title: "Pengertian Integral",
-    content: `Integral merupakan salah satu konsep kalkulus yang konsepnya kebalikan dari proses turunan. Fungsinya untuk menjumlahkan sesuatu yang sangat kecil-kecil sampai jadi satu kesatuan.`
+    pengertian: `
+      <p>Integral merupakan salah satu konsep dalam
+      matematika yang merupakan kebalikan dari turunan.</p>
+      <p>Integral digunakan untuk menentukan fungsi
+      asal dan menghitung luas daerah.</p>
+    `,
+    contoh: `
+      <p>Tentukan integral dari f(x) = 2x.</p>
+      <p>Jawab: ∫ 2x dx = x² + C</p>
+    `
   }
 ];
 let selectedRole = "siswa";
