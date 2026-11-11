@@ -14,10 +14,8 @@ const topics = [
 const topicMaterials = [
   {
     content: `Suatu fungsi f (x) disebut sebagai turunan dari suatu fungsi F (x). Jadi F (x) disebut anti turunan dari f (x) pada suatu interval I  jika untuk setiap nilai x di dalam I  berlaku F' (x) = f (x).
-
-Secara sederhana, integral digunakan untuk menghitung luas daerah, volume benda, jarak, dan berbagai permasalahan matematika lainnya.
-
-Integral memiliki dua jenis utama, yaitu integral tak tentu dan integral tentu.`
+    Secara sederhana, integral digunakan untuk menghitung luas daerah, volume benda, jarak, dan berbagai permasalahan matematika lainnya.
+    Integral memiliki dua jenis utama, yaitu integral tak tentu dan integral tentu.`
   },
   { content: "" },
   { content: "" },
