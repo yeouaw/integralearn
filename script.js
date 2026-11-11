@@ -3,6 +3,12 @@ const topics = [
   "Sifat-Sifat Integral", "Integral Substitusi", "Integral Parsial",
   "Integral Tentu", "Luas Daerah dan Aplikasi Integral"
 ];
+const topicMaterials = [
+  {
+    title: "Pengertian Integral",
+    content: `Integral merupakan salah satu konsep kalkulus yang konsepnya kebalikan dari proses turunan. Fungsinya untuk menjumlahkan sesuatu yang sangat kecil-kecil sampai jadi satu kesatuan.`
+  }
+];
 let selectedRole = "siswa";
 let currentRole = "siswa";
 let currentPage = "Beranda";
@@ -101,13 +107,37 @@ function showPage(page) {
   pageView.classList.remove("hidden");
   const content = pageContent(page);
   pageView.innerHTML = content;
-  pageView.querySelectorAll("[data-topic]").forEach(btn => btn.addEventListener("click", () => {
-    const topic = topics[Number(btn.dataset.topic)];
-    alert(`Bagian materi "${topic}" bisa kamu isi dengan konten pembelajaran.`);
-  }));
+  pageView.querySelectorAll("[data-topic]").forEach(btn => {
+  btn.addEventListener("click", () => {
+    const index = Number(btn.dataset.topic);
+    renderTopicDetail(index);
+  });
+});
   pageView.querySelectorAll("[data-action]").forEach(btn => btn.addEventListener("click", () => handleAction(btn.dataset.action)));
 }
 
+
+  function renderTopicDetail(index) {
+    const material = topicMaterials[index];
+    const title = topics[index];
+  
+    const pageView = document.getElementById("pageView");
+  
+    pageView.innerHTML = `
+      <button id="backToTopics">← Kembali ke daftar materi</button>
+  
+      <h2>${title}</h2>
+  
+      <div class="page-item">
+        <h3>Pengertian Integral</h3>
+        <p>${material ? material.content : "Materi ini sedang disiapkan."}</p>
+      </div>
+    `;
+
+  document.getElementById("backToTopics").addEventListener("click", () => {
+    showPage("Materi Integral");
+  });
+}
 function pageContent(page) {
   if (page === "Materi Integral") {
     return `<h2>Materi Integral</h2><p>Pelajari materi integral melalui delapan topik berikut.</p><div class="page-list">${topics.map((t,i)=>`<div class="page-item"><div><h4>Topik ${i+1} · ${t}</h4><p>Materi pembelajaran matematika</p></div><button data-topic="${i}">Buka materi</button></div>`).join("")}</div>`;
