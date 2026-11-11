@@ -1,113 +1,740 @@
+
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>IntegraLearn — Ruang Belajar Digital</title>
-  <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IntegraLearn</title>
+
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:#f3f6fc;color:#1e293b}
+button,input,select,textarea{font:inherit}
+button{border:0;border-radius:9px;padding:11px 16px;background:#3157c8;color:white;cursor:pointer;font-weight:bold}
+button:hover{background:#203b91}
+input,select,textarea{width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:9px;margin:7px 0 14px}
+textarea{min-height:100px}
+label{font-weight:bold}
+.hidden{display:none!important}
+.card{background:white;padding:24px;border-radius:16px;box-shadow:0 5px 20px #0000000d;margin-bottom:18px}
+.login{max-width:440px;margin:6vh auto;padding:25px}
+.login h1{text-align:center;color:#3157c8}
+.login button{margin:4px}
+.full{width:100%}
+header{background:white;padding:15px 22px;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+header b{color:#3157c8;font-size:20px}
+main{max-width:1100px;margin:25px auto;padding:0 16px}
+.welcome{background:linear-gradient(120deg,#3157c8,#718cf0);color:white;padding:25px;border-radius:16px;margin-bottom:20px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:15px}
+.tile{background:white;padding:20px;border-radius:14px}
+.tile h3{color:#3157c8}
+.panel{margin-top:20px}
+.item{padding:14px 0;border-bottom:1px solid #e2e8f0}
+.item:last-child{border:0}
+.notice{padding:12px;background:#fff4d6;border-radius:9px;margin:12px 0}
+.error{color:#c62828;margin:10px 0}
+.success{color:#16803c;margin:10px 0}
+.small{font-size:13px;color:#64748b}
+.nav{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}
+.nav button{background:#e7edff;color:#24439f}
+.nav button:hover{background:#cdd9ff}
+.danger{background:#d93636}
+.quiz-option{display:block;font-weight:normal;margin:9px 0}
+.quiz-option input{width:auto;margin:0 8px 0 0}
+@media(max-width:600px){.login{margin:20px 12px}.card{padding:18px}}
+</style>
 </head>
+
 <body>
-  <main id="loginPage" class="login-page">
-    <section class="login-card">
-      <div class="brand brand-center">
-        <div class="brand-mark">I</div>
-        <div><h1>IntegraLearn</h1><p>Ruang belajar digital</p></div>
-      </div>
-      <div class="login-heading">
-        <span class="eyebrow">SELAMAT DATANG</span>
-        <h2>Masuk ke kelasmu</h2>
-        <p>Pilih jenis akun untuk melanjutkan pembelajaran.</p>
-      </div>
 
-      <div class="role-switch" role="group" aria-label="Pilih jenis akun">
-        <button class="role-btn active" data-role="siswa" type="button">♙ Siswa</button>
-        <button class="role-btn" data-role="guru" type="button">▣ Guru</button>
-      </div>
+<!-- HALAMAN LOGIN -->
+<section id="authPage" class="login card">
+  <h1>📘 IntegraLearn</h1>
+  <p style="text-align:center">Media Pembelajaran Matematika</p>
 
-      <form id="loginForm">
-        <label for="username">Username</label>
-        <input id="username" name="username" autocomplete="username" placeholder="Masukkan username" required>
-        <label for="password">Password</label>
-        <input id="password" name="password" type="password" autocomplete="current-password" placeholder="Masukkan password" required>
-        <p id="loginError" class="error" aria-live="polite"></p>
-        <button class="primary-btn full" type="submit">Masuk <span>→</span></button>
-      </form>
-
-      <div class="demo-info">
-        <strong>Akun untuk mencoba</strong>
-        <p>Siswa: <b>siswa</b> / <b>12345</b></p>
-        <p>Guru: <b>guru</b> / <b>12345</b></p>
-      </div>
-      <p class="login-foot">© 2026 IntegraLearn · Belajar integral jadi lebih mudah</p>
-    </section>
-  </main>
-
-  <div id="appPage" class="app hidden">
-    <aside class="sidebar">
-      <div class="brand">
-        <div class="brand-mark">I</div>
-        <div><h1>IntegraLearn</h1><p>Ruang belajar digital</p></div>
-      </div>
-      <div class="school-label">IDENTITAS SEKOLAH</div>
-      <strong class="school-name">SMA / SMK Anda</strong>
-      <nav id="sideNav" class="side-nav"></nav>
-      <button id="logoutBtn" class="logout-btn">↪ Keluar</button>
-    </aside>
-
-    <section class="main-area">
-      <header class="topbar">
-        <div class="crumb">Kelas <span>/</span> <b id="crumbTitle">Beranda</b></div>
-        <div class="profile">
-          <button class="help-btn" title="Bantuan">ⓘ</button>
-          <div id="avatar" class="avatar">S</div>
-          <span id="profileName">Siswa</span>
-        </div>
-      </header>
-      <main class="content">
-        <div id="dashboardView">
-          <section class="hero">
-            <div class="hero-copy">
-              <span class="eyebrow">KELAS MATEMATIKA • SMA/SMK</span>
-              <h2>Belajar integral, <em>selangkah demi selangkah.</em></h2>
-              <p>Pahami konsep, coba latihan, dan pantau perkembangan belajarmu.</p>
-              <button class="primary-btn" data-go="Materi Integral">Mulai belajar <span>→</span></button>
-            </div>
-            <div class="integral-art" aria-hidden="true">
-              <div class="orbit orbit-one"></div><div class="orbit orbit-two"></div>
-              <div class="integral-symbol">∫</div>
-              <div class="formula">∫ f(x) dx = F(x) + C</div>
-              <i class="dot dot-a"></i><i class="dot dot-b"></i>
-            </div>
-          </section>
-
-          <section id="studentStats" class="stats-grid">
-            <article class="stat-card"><div class="stat-icon purple">▤</div><div><small>Materi tersedia</small><h3>8 topik</h3><p>Integral SMA/SMK</p></div></article>
-            <article class="stat-card"><div class="stat-icon blue">✓</div><div><small>Nilai kuis terakhir</small><h3 id="lastScore">—</h3><p id="scoreCaption">Belum ada percobaan</p></div></article>
-            <article class="stat-card"><div class="stat-icon green">◷</div><div><small>Kehadiran</small><h3 id="attendanceCount">0 kali</h3><p>Absensi tercatat di perangkat ini</p></div></article>
-          </section>
-
-          <section id="teacherStats" class="stats-grid hidden">
-            <article class="stat-card"><div class="stat-icon purple">♙</div><div><small>Peserta kelas</small><h3>32 siswa</h3><p>Data contoh kelas</p></div></article>
-            <article class="stat-card"><div class="stat-icon blue">▤</div><div><small>Materi tersedia</small><h3>8 topik</h3><p>Materi integral</p></div></article>
-            <article class="stat-card"><div class="stat-icon green">✓</div><div><small>Tugas terkumpul</small><h3>24 tugas</h3><p>Data contoh pengumpulan</p></div></article>
-          </section>
-
-          <section class="lower-grid">
-            <article class="panel continue-panel">
-              <div class="panel-heading"><div><h3 id="lowerTitle">Lanjutkan pembelajaran</h3><p id="lowerSubtitle">Materi yang bisa kamu pelajari hari ini</p></div><button class="text-btn" data-go="Materi Integral">Lihat semua →</button></div>
-              <div id="topicPreview" class="topic-preview"></div>
-            </article>
-            <article class="panel progress-panel">
-              <h3 id="progressTitle">Progres belajar</h3><p>Catatan di browser ini</p>
-              <div class="progress-ring"><strong id="progressPercent">0%</strong></div>
-              <small id="progressCaption">Belum ada materi yang ditandai selesai</small>
-            </article>
-          </section>
-        </div>
-        <section id="pageView" class="panel page-view hidden"></section>
-      </main>
-    </section>
+  <div class="nav">
+    <button onclick="showAuth('login')">Sign In</button>
+    <button onclick="showAuth('signup')">Sign Up</button>
   </div>
-  <script src="script.js"></script>
+
+  <form id="loginForm">
+    <h2>Sign In</h2>
+    <label>Email</label>
+    <input id="loginEmail" type="email" required placeholder="Masukkan email">
+
+    <label>Password</label>
+    <input id="loginPassword" type="password" required placeholder="Masukkan password">
+
+    <button class="full" type="submit">Masuk</button>
+  </form>
+
+  <form id="signupForm" class="hidden">
+    <h2>Buat Akun</h2>
+    <label>Nama lengkap</label>
+    <input id="regName" required placeholder="Nama lengkap">
+
+    <label>Email</label>
+    <input id="regEmail" type="email" required placeholder="Email aktif">
+
+    <label>Password</label>
+    <input id="regPassword" type="password" minlength="6" required placeholder="Minimal 6 karakter">
+
+    <label>Daftar sebagai</label>
+    <select id="regRole" required>
+      <option value="student">Siswa</option>
+      <option value="teacher">Guru</option>
+    </select>
+
+    <button class="full" type="submit">Daftar</button>
+  </form>
+
+  <div id="authMessage" role="alert"></div>
+  <p class="small">Pendaftaran Admin hanya dilakukan secara manual melalui Firebase.</p>
+</section>
+
+<!-- HALAMAN APLIKASI -->
+<section id="appPage" class="hidden">
+<header>
+  <b>📘 IntegraLearn</b>
+  <div>
+    <span id="userLabel"></span>
+    <button class="danger" onclick="logout()">Keluar</button>
+  </div>
+</header>
+
+<main>
+  <div class="welcome">
+    <h1 id="welcomeTitle">Selamat datang!</h1>
+    <p id="welcomeText"></p>
+  </div>
+
+  <!-- DASHBOARD ADMIN -->
+  <section id="adminArea" class="hidden">
+    <div class="card">
+      <h2>Dashboard Admin</h2>
+      <p>Kelola pengguna dan persetujuan pendaftaran guru.</p>
+      <button onclick="loadAdminUsers()">Muat ulang pengguna</button>
+      <div id="adminUsers"></div>
+    </div>
+  </section>
+
+  <!-- DASHBOARD GURU -->
+  <section id="teacherArea" class="hidden">
+    <div class="grid">
+      <div class="tile">
+        <h3>📚 Materi</h3>
+        <p>Tambahkan dan kelola materi pembelajaran.</p>
+        <button onclick="openPanel('teacherMaterials')">Kelola materi</button>
+      </div>
+      <div class="tile">
+        <h3>📝 Kuis</h3>
+        <p>Buat soal pilihan ganda untuk siswa.</p>
+        <button onclick="openPanel('teacherQuestions')">Kelola kuis</button>
+      </div>
+      <div class="tile">
+        <h3>📊 Nilai siswa</h3>
+        <p>Lihat hasil pengerjaan kuis siswa.</p>
+        <button onclick="openPanel('teacherScores')">Lihat nilai</button>
+      </div>
+    </div>
+
+    <div id="teacherMaterials" class="card panel hidden">
+      <h2>Tambah Materi</h2>
+      <label>Judul materi</label>
+      <input id="materialTitle" placeholder="Judul materi">
+
+      <label>Isi materi</label>
+      <textarea id="materialBody" placeholder="Tuliskan materi di sini"></textarea>
+
+      <button onclick="addMaterial()">Simpan materi</button>
+      <div id="teacherMaterialList"></div>
+    </div>
+
+    <div id="teacherQuestions" class="card panel hidden">
+      <h2>Tambah Kuis</h2>
+      <label>Pertanyaan</label>
+      <input id="questionText" placeholder="Tuliskan pertanyaan">
+
+      <label>Pilihan A</label>
+      <input id="optionA" placeholder="Pilihan A">
+
+      <label>Pilihan B</label>
+      <input id="optionB" placeholder="Pilihan B">
+
+      <label>Pilihan C</label>
+      <input id="optionC" placeholder="Pilihan C">
+
+      <label>Jawaban benar</label>
+      <select id="correctAnswer">
+        <option value="0">A</option>
+        <option value="1">B</option>
+        <option value="2">C</option>
+      </select>
+
+      <button onclick="addQuestion()">Simpan soal</button>
+      <div id="teacherQuestionList"></div>
+    </div>
+
+    <div id="teacherScores" class="card panel hidden">
+      <h2>Nilai Siswa</h2>
+      <div id="scoreList"></div>
+    </div>
+  </section>
+
+  <!-- DASHBOARD SISWA -->
+  <section id="studentArea" class="hidden">
+    <div class="grid">
+      <div class="tile">
+        <h3>📚 Materi Pembelajaran</h3>
+        <p>Pelajari materi integral yang dibagikan guru.</p>
+        <button onclick="openPanel('studentMaterials')">Buka materi</button>
+      </div>
+      <div class="tile">
+        <h3>📝 Kuis dan Latihan</h3>
+        <p>Kerjakan soal dan lihat hasil belajarmu.</p>
+        <button onclick="openPanel('studentQuestions')">Mulai kuis</button>
+      </div>
+    </div>
+
+    <div id="studentMaterials" class="card panel hidden">
+      <h2>Materi Pembelajaran</h2>
+      <div id="studentMaterialList"></div>
+    </div>
+
+    <div id="studentQuestions" class="card panel hidden">
+      <h2>Kuis Matematika</h2>
+      <div id="studentQuestionList"></div>
+    </div>
+  </section>
+</main>
+</section>
+
+<script type="module">
+import { initializeApp } from
+"https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
+
+import {
+  getAuth, createUserWithEmailAndPassword,
+  signInWithEmailAndPassword, signOut, onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
+
+import {
+  getFirestore, doc, setDoc, getDoc, collection,
+  addDoc, getDocs, updateDoc, serverTimestamp
+} from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+
+/* GANTI BAGIAN INI DENGAN firebaseConfig MILIKMU */
+const firebaseConfig = {
+  apiKey: "ISI_API_KEY_DARI_FIREBASE",
+  authDomain: "integralearn-d5019.firebaseapp.com",
+  projectId: "integralearn-d5019",
+  storageBucket: "integralearn-d5019.firebasestorage.app",
+  messagingSenderId: "ISI_MESSAGING_SENDER_ID",
+  appId: "ISI_APP_ID",
+  measurementId: "ISI_MEASUREMENT_ID"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+let currentUser = null;
+let currentRole = null;
+let currentName = "";
+let ignoreAuthChange = false;
+
+const $ = id => document.getElementById(id);
+
+window.showAuth = function(type) {
+  $("loginForm").classList.toggle("hidden", type !== "login");
+  $("signupForm").classList.toggle("hidden", type !== "signup");
+  $("authMessage").textContent = "";
+};
+
+function message(text, type="error") {
+  $("authMessage").className = type;
+  $("authMessage").textContent = text;
+}
+
+function showApp(role, name, email) {
+  currentRole = role;
+  currentName = name;
+  currentUser = auth.currentUser;
+
+  $("authPage").classList.add("hidden");
+  $("appPage").classList.remove("hidden");
+
+  $("userLabel").textContent = name + " (" + email + ")";
+  $("welcomeTitle").textContent = "Halo, " + name + "!";
+  $("welcomeText").textContent =
+    role === "admin" ? "Kelola akun pengguna IntegraLearn." :
+    role === "teacher" ? "Selamat datang di dashboard Guru." :
+    "Selamat belajar di IntegraLearn!";
+
+  ["adminArea","teacherArea","studentArea"].forEach(id =>
+    $(id).classList.add("hidden")
+  );
+
+  if (role === "admin") {
+    $("adminArea").classList.remove("hidden");
+    loadAdminUsers();
+  } else if (role === "teacher") {
+    $("teacherArea").classList.remove("hidden");
+  } else {
+    $("studentArea").classList.remove("hidden");
+    loadStudentMaterials();
+    loadStudentQuestions();
+  }
+}
+
+async function checkAccount(user) {
+  const adminRef = doc(db, "admins", user.uid);
+  const adminSnap = await getDoc(adminRef);
+
+  if (adminSnap.exists()) {
+    showApp("admin", "Administrator", user.email);
+    return;
+  }
+
+  const userRef = doc(db, "users", user.uid);
+  const userSnap = await getDoc(userRef);
+
+  if (!userSnap.exists()) {
+    await signOut(auth);
+    $("authPage").classList.remove("hidden");
+    message("Data akun tidak ditemukan. Silakan hubungi Admin.");
+    return;
+  }
+
+  const data = userSnap.data();
+
+  if (data.status === "pending") {
+    await signOut(auth);
+    $("authPage").classList.remove("hidden");
+    message("Pendaftaran Guru masih menunggu persetujuan Admin.");
+    return;
+  }
+
+  if (data.status === "rejected") {
+    await signOut(auth);
+    $("authPage").classList.remove("hidden");
+    message("Pendaftaran akun Guru ditolak oleh Admin.");
+    return;
+  }
+
+  if (data.status !== "active") {
+    await signOut(auth);
+    $("authPage").classList.remove("hidden");
+    message("Status akun belum aktif.");
+    return;
+  }
+
+  showApp(data.role, data.name, user.email);
+}
+
+/* SIGN UP */
+$("signupForm").addEventListener("submit", async e => {
+  e.preventDefault();
+  const name = $("regName").value.trim();
+  const email = $("regEmail").value.trim();
+  const password = $("regPassword").value;
+  const role = $("regRole").value;
+
+  try {
+    ignoreAuthChange = true;
+
+    const result = await createUserWithEmailAndPassword(
+      auth, email, password
+    );
+
+    const status = role === "student" ? "active" : "pending";
+
+    await setDoc(doc(db, "users", result.user.uid), {
+      uid: result.user.uid,
+      name,
+      email,
+      role,
+      status,
+      createdAt: serverTimestamp()
+    });
+
+    if (role === "teacher") {
+      await signOut(auth);
+      message("Pendaftaran berhasil. Silakan tunggu persetujuan Admin.", "success");
+      showAuth("login");
+      message("Akun Guru menunggu persetujuan Admin.", "success");
+    } else {
+      showApp("student", name, email);
+    }
+
+  } catch (error) {
+    message("Pendaftaran gagal: " + error.message);
+  } finally {
+    ignoreAuthChange = false;
+  }
+});
+
+/* SIGN IN */
+$("loginForm").addEventListener("submit", async e => {
+  e.preventDefault();
+
+  try {
+    const email = $("loginEmail").value.trim();
+    const password = $("loginPassword").value;
+
+    const result = await signInWithEmailAndPassword(auth, email, password);
+    await checkAccount(result.user);
+
+  } catch (error) {
+    message("Login gagal: " + error.message);
+  }
+});
+
+/* LOGIN OTOMATIS SAAT HALAMAN DIBUKA KEMBALI */
+onAuthStateChanged(auth, async user => {
+  if (ignoreAuthChange || !user) return;
+
+  try {
+    await checkAccount(user);
+  } catch (error) {
+    console.error(error);
+    message("Tidak dapat memeriksa akun: " + error.message);
+  }
+});
+
+/* LOGOUT */
+window.logout = async function() {
+  await signOut(auth);
+  currentUser = null;
+  currentRole = null;
+  $("appPage").classList.add("hidden");
+  $("authPage").classList.remove("hidden");
+  showAuth("login");
+};
+
+/* NAVIGASI PANEL */
+window.openPanel = function(id) {
+  document.querySelectorAll(".panel").forEach(panel =>
+    panel.classList.add("hidden")
+  );
+  $(id).classList.remove("hidden");
+
+  if (id === "teacherMaterials") loadTeacherMaterials();
+  if (id === "teacherQuestions") loadTeacherQuestions();
+  if (id === "teacherScores") loadScores();
+  if (id === "studentMaterials") loadStudentMaterials();
+  if (id === "studentQuestions") loadStudentQuestions();
+};
+
+/* ADMIN: DAFTAR PENGGUNA DAN PERSETUJUAN GURU */
+window.loadAdminUsers = async function() {
+  const host = $("adminUsers");
+  host.innerHTML = "Memuat pengguna...";
+
+  try {
+    const snap = await getDocs(collection(db, "users"));
+    host.innerHTML = "<h3>Daftar pengguna</h3>";
+
+    if (snap.empty) {
+      host.innerHTML += "<p>Belum ada pengguna terdaftar.</p>";
+      return;
+    }
+
+    snap.forEach(item => {
+      const u = item.data();
+      const div = document.createElement("div");
+      div.className = "item";
+
+      const title = document.createElement("b");
+      title.textContent = u.name + " — " + u.email;
+
+      const detail = document.createElement("p");
+      detail.textContent = "Peran: " + u.role + " | Status: " + u.status;
+
+      div.append(title, detail);
+
+      if (u.role === "teacher" && u.status === "pending") {
+        const approve = document.createElement("button");
+        approve.textContent = "Setujui";
+        approve.onclick = () => approveTeacher(item.id);
+
+        const reject = document.createElement("button");
+        reject.textContent = "Tolak";
+        reject.className = "danger";
+        reject.onclick = () => rejectTeacher(item.id);
+
+        div.append(approve, reject);
+      }
+
+      host.appendChild(div);
+    });
+
+  } catch (error) {
+    host.textContent = "Gagal memuat pengguna: " + error.message;
+  }
+};
+
+async function approveTeacher(uid) {
+  try {
+    await updateDoc(doc(db, "users", uid), {status:"active"});
+    alert("Akun Guru berhasil disetujui.");
+    loadAdminUsers();
+  } catch (error) {
+    alert("Gagal menyetujui akun: " + error.message);
+  }
+}
+
+async function rejectTeacher(uid) {
+  try {
+    await updateDoc(doc(db, "users", uid), {status:"rejected"});
+    alert("Pendaftaran Guru ditolak.");
+    loadAdminUsers();
+  } catch (error) {
+    alert("Gagal menolak akun: " + error.message);
+  }
+}
+
+/* GURU: TAMBAH MATERI */
+window.addMaterial = async function() {
+  const title = $("materialTitle").value.trim();
+  const body = $("materialBody").value.trim();
+
+  if (!title || !body) {
+    alert("Judul dan isi materi harus diisi.");
+    return;
+  }
+
+  try {
+    await addDoc(collection(db, "materials"), {
+      title, body,
+      createdBy: auth.currentUser.uid,
+      createdAt: serverTimestamp()
+    });
+
+    $("materialTitle").value = "";
+    $("materialBody").value = "";
+    alert("Materi berhasil disimpan.");
+    loadTeacherMaterials();
+
+  } catch (error) {
+    alert("Gagal menyimpan materi: " + error.message);
+  }
+};
+
+async function loadTeacherMaterials() {
+  const host = $("teacherMaterialList");
+  host.innerHTML = "Memuat materi...";
+
+  const snap = await getDocs(collection(db, "materials"));
+  host.innerHTML = "<h3>Daftar materi</h3>";
+
+  snap.forEach(item => {
+    const m = item.data();
+    const div = document.createElement("div");
+    div.className = "item";
+    const h = document.createElement("b");
+    h.textContent = m.title;
+    const p = document.createElement("p");
+    p.textContent = m.body;
+    div.append(h,p);
+    host.appendChild(div);
+  });
+}
+
+/* SISWA: MELIHAT MATERI */
+async function loadStudentMaterials() {
+  const host = $("studentMaterialList");
+  host.innerHTML = "Memuat materi...";
+
+  try {
+    const snap = await getDocs(collection(db, "materials"));
+    host.innerHTML = "";
+
+    if (snap.empty) {
+      host.textContent = "Belum ada materi dari Guru.";
+      return;
+    }
+
+    snap.forEach(item => {
+      const m = item.data();
+      const div = document.createElement("div");
+      div.className = "item";
+      const h = document.createElement("h3");
+      h.textContent = m.title;
+      const p = document.createElement("p");
+      p.textContent = m.body;
+      div.append(h,p);
+      host.appendChild(div);
+    });
+  } catch (error) {
+    host.textContent = "Gagal memuat materi: " + error.message;
+  }
+}
+
+/* GURU: MEMBUAT KUIS */
+window.addQuestion = async function() {
+  const question = $("questionText").value.trim();
+  const options = [
+    $("optionA").value.trim(),
+    $("optionB").value.trim(),
+    $("optionC").value.trim()
+  ];
+  const answer = Number($("correctAnswer").value);
+
+  if (!question || options.some(x => !x)) {
+    alert("Pertanyaan dan semua pilihan harus diisi.");
+    return;
+  }
+
+  try {
+    await addDoc(collection(db, "questions"), {
+      question, options, answer,
+      createdBy: auth.currentUser.uid,
+      createdAt: serverTimestamp()
+    });
+
+    ["questionText","optionA","optionB","optionC"].forEach(id => $(id).value = "");
+    alert("Kuis berhasil disimpan.");
+    loadTeacherQuestions();
+
+  } catch (error) {
+    alert("Gagal menyimpan kuis: " + error.message);
+  }
+};
+
+async function loadTeacherQuestions() {
+  const host = $("teacherQuestionList");
+  host.innerHTML = "Memuat soal...";
+  const snap = await getDocs(collection(db, "questions"));
+  host.innerHTML = "";
+
+  snap.forEach((item,index) => {
+    const p = document.createElement("p");
+    p.textContent = (index+1) + ". " + item.data().question;
+    host.appendChild(p);
+  });
+}
+
+/* SISWA: MENGERJAKAN KUIS */
+async function loadStudentQuestions() {
+  const host = $("studentQuestionList");
+  host.innerHTML = "Memuat kuis...";
+
+  try {
+    const snap = await getDocs(collection(db, "questions"));
+    const questions = snap.docs.map(d => ({id:d.id,...d.data()}));
+
+    host.innerHTML = "";
+
+    if (!questions.length) {
+      host.textContent = "Belum ada kuis dari Guru.";
+      return;
+    }
+
+    const form = document.createElement("form");
+
+    questions.forEach((q,i) => {
+      const box = document.createElement("div");
+      box.className = "item";
+
+      const title = document.createElement("b");
+      title.textContent = (i+1) + ". " + q.question;
+      box.appendChild(title);
+
+      q.options.forEach((option,j) => {
+        const label = document.createElement("label");
+        label.className = "quiz-option";
+
+        const radio = document.createElement("input");
+        radio.type = "radio";
+        radio.name = "question" + i;
+        radio.value = j;
+        radio.required = true;
+
+        label.append(radio, document.createTextNode(option));
+        box.appendChild(label);
+      });
+
+      form.appendChild(box);
+    });
+
+    const submit = document.createElement("button");
+    submit.type = "submit";
+    submit.textContent = "Kirim jawaban";
+    form.appendChild(submit);
+
+    const result = document.createElement("div");
+    result.className = "notice";
+    host.append(form,result);
+
+    form.addEventListener("submit", async e => {
+      e.preventDefault();
+
+      let score = 0;
+      questions.forEach((q,i) => {
+        const selected = form.querySelector(
+          'input[name="question' + i + '"]:checked'
+        );
+        if (selected && Number(selected.value) === q.answer) score++;
+      });
+
+      const total = questions.length;
+      const percentage = Math.round(score / total * 100);
+
+      try {
+        await addDoc(collection(db, "scores"), {
+          uid: auth.currentUser.uid,
+          name: currentName,
+          score,
+          total,
+          percentage,
+          createdAt: serverTimestamp()
+        });
+
+        result.textContent =
+          "Kuis selesai! Nilai kamu: " + percentage +
+          " (" + score + " dari " + total + " benar).";
+
+        form.querySelectorAll("input,button").forEach(el => el.disabled = true);
+
+      } catch (error) {
+        result.textContent = "Gagal menyimpan nilai: " + error.message;
+      }
+    });
+
+  } catch (error) {
+    host.textContent = "Gagal memuat kuis: " + error.message;
+  }
+}
+
+/* GURU: MELIHAT NILAI */
+async function loadScores() {
+  const host = $("scoreList");
+  host.innerHTML = "Memuat nilai...";
+
+  try {
+    const snap = await getDocs(collection(db, "scores"));
+    host.innerHTML = "";
+
+    if (snap.empty) {
+      host.textContent = "Belum ada nilai siswa.";
+      return;
+    }
+
+    snap.forEach(item => {
+      const s = item.data();
+      const div = document.createElement("div");
+      div.className = "item";
+      div.textContent =
+        s.name + " — " + s.score + "/" + s.total +
+        " (" + s.percentage + "%)";
+      host.appendChild(div);
+    });
+  } catch (error) {
+    host.textContent = "Gagal memuat nilai: " + error.message;
+  }
+}
+
+</script>
 </body>
 </html>
