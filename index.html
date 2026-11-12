@@ -572,7 +572,80 @@ mjx-container[display="true"] > svg {
   margin: 0.65rem 0 !important;
   padding: 0 !important;
 }
+/* ===== FORUM DISKUSI ===== */
+.forum-form {
+  background: #f8faff;
+  border: 1px solid #dce4f5;
+  border-radius: 14px;
+  padding: 18px;
+  margin: 18px 0 24px;
+}
 
+.forum-post {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 18px;
+  margin: 16px 0;
+  box-shadow: 0 3px 12px #00000008;
+}
+
+.forum-post h3 {
+  color: #172b65;
+  margin: 0 0 8px;
+  line-height: 1.5;
+}
+
+.forum-meta {
+  color: #64748b;
+  font-size: 13px;
+  margin-bottom: 12px;
+}
+
+.forum-content {
+  line-height: 1.75;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+  margin: 12px 0;
+}
+
+.forum-replies {
+  border-top: 1px solid #e2e8f0;
+  margin-top: 16px;
+  padding-top: 12px;
+}
+
+.forum-reply {
+  background: #f3f6fc;
+  border-radius: 10px;
+  padding: 12px;
+  margin: 10px 0;
+}
+
+.forum-reply p {
+  margin: 7px 0 0;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  line-height: 1.65;
+}
+
+.forum-reply-form {
+  margin-top: 14px;
+}
+
+.forum-reply-form textarea {
+  min-height: 72px;
+}
+
+.forum-tag {
+  display: inline-block;
+  background: #e7edff;
+  color: #24439f;
+  border-radius: 20px;
+  padding: 4px 10px;
+  font-size: 12px;
+  margin: 4px 0;
+}
 </style>
 </head>
 
@@ -785,7 +858,72 @@ mjx-container[display="true"] > svg {
             <div id="studentQuestionList"></div>
           </div>
         </section>
+<!-- FORUM DISKUSI SISWA DAN GURU -->
+<section id="page-forum" class="page-section">
+  <div class="card">
 
+    <h2>💬 Forum Diskusi</h2>
+
+    <p>
+      Tempat siswa dan guru bertanya, berbagi pemahaman,
+      serta membahas materi integral bersama.
+    </p>
+
+    <button type="button" onclick="loadForum()">
+      Muat ulang diskusi
+    </button>
+
+    <div class="forum-form">
+
+      <h3>Buat Diskusi Baru</h3>
+
+      <label for="forumTitle">Judul diskusi</label>
+      <input
+        id="forumTitle"
+        maxlength="120"
+        placeholder="Contoh: Mengapa integral tak tentu memiliki konstanta C?"
+      >
+
+      <label for="forumMaterial">Materi terkait</label>
+
+      <select id="forumMaterial">
+        <option value="Umum">Diskusi umum</option>
+        <option value="1. Pengenalan Integral">1. Pengenalan Integral</option>
+        <option value="2. Integral Tak Tentu">2. Integral Tak Tentu</option>
+        <option value="3. Rumus Pangkat Integral">3. Rumus Pangkat Integral</option>
+        <option value="4. Sifat-Sifat Integral">4. Sifat-Sifat Integral</option>
+        <option value="5. Integral Tentu">5. Integral Tentu</option>
+        <option value="6. Luas Daerah di Bawah Kurva">6. Luas Daerah di Bawah Kurva</option>
+        <option value="7. Integral Fungsi Aljabar">7. Integral Fungsi Aljabar</option>
+        <option value="8. Aplikasi Integral">8. Aplikasi Integral</option>
+      </select>
+
+      <label for="forumContent">
+        Isi diskusi / pertanyaan
+      </label>
+
+      <textarea
+        id="forumContent"
+        maxlength="4000"
+        placeholder="Tuliskan pertanyaan atau pendapatmu. Rumus LaTeX dapat ditulis dengan \( ... \) atau \[ ... \]."
+      ></textarea>
+
+      <button type="button" onclick="createDiscussion()">
+        Publikasikan Diskusi
+      </button>
+
+      <div id="forumMessage" class="small" role="status"></div>
+
+    </div>
+
+    <h3>Daftar Diskusi</h3>
+
+    <div id="forumList">
+      Memuat diskusi...
+    </div>
+
+  </div>
+</section>
         <!-- POP-UP DETAIL MATERI -->
         <div id="materialModal" class="material-modal hidden">
           <div class="material-modal-content">
@@ -1260,23 +1398,27 @@ function showApp(role, name, email) {
 
   $("userLabel").textContent = name + " (" + email + ")";
 
-  const menus = {
-    admin: [
-      ["home", "🏠 Beranda"],
-      ["admin", "👥 Persetujuan Guru"]
-    ],
-    teacher: [
-      ["home", "🏠 Beranda"],
-      ["teacherMaterials", "📚 Kelola Materi"],
-      ["teacherQuestions", "📝 Kelola Kuis"],
-      ["teacherScores", "📊 Nilai Siswa"]
-    ],
-    student: [
-      ["home", "🏠 Beranda"],
-      ["studentMaterials", "📚 Materi Integral"],
-      ["studentQuestions", "📝 Kuis dan Latihan"]
-    ]
-  };
+const menus = {
+  admin: [
+    ["home", "🏠 Beranda"],
+    ["admin", "👥 Persetujuan Guru"]
+  ],
+
+  teacher: [
+    ["home", "🏠 Beranda"],
+    ["teacherMaterials", "📚 Kelola Materi"],
+    ["teacherQuestions", "📝 Kelola Kuis"],
+    ["teacherScores", "📊 Nilai Siswa"],
+    ["forum", "💬 Forum Diskusi"]
+  ],
+
+  student: [
+    ["home", "🏠 Beranda"],
+    ["studentMaterials", "📚 Materi Integral"],
+    ["studentQuestions", "📝 Kuis dan Latihan"],
+    ["forum", "💬 Forum Diskusi"]
+  ]
+};
 
   $("sidebarMenu").innerHTML = "";
 
@@ -1482,15 +1624,16 @@ window.navigatePage = function(page) {
     button.classList.toggle("active", button.dataset.page === page);
   });
 
-  const titles = {
-    home: "Beranda",
-    admin: "Persetujuan Guru",
-    teacherMaterials: "Kelola Materi",
-    teacherQuestions: "Kelola Kuis",
-    teacherScores: "Nilai Siswa",
-    studentMaterials: "Materi Integral",
-    studentQuestions: "Kuis dan Latihan"
-  };
+const titles = {
+  home: "Beranda",
+  admin: "Persetujuan Guru",
+  teacherMaterials: "Kelola Materi",
+  teacherQuestions: "Kelola Kuis",
+  teacherScores: "Nilai Siswa",
+  studentMaterials: "Materi Integral",
+  studentQuestions: "Kuis dan Latihan",
+  forum: "Forum Diskusi"
+};
 
   $("pageTitle").textContent = titles[page] || "IntegraLearn";
 
@@ -1500,6 +1643,7 @@ window.navigatePage = function(page) {
   if (page === "teacherScores") loadScores();
   if (page === "studentMaterials") loadStudentMaterials();
   if (page === "studentQuestions") loadStudentQuestions();
+  if (page === "forum") loadForum();
 
 };
 
