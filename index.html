@@ -646,6 +646,37 @@ mjx-container[display="true"] > svg {
   font-size: 12px;
   margin: 4px 0;
 }
+  /* ===== PENGUMPULAN TUGAS ===== */
+
+.assignment-card {
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 18px;
+  margin: 15px 0;
+}
+
+.assignment-card h3 {
+  color: #172b65;
+}
+
+.assignment-status {
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 20px;
+  background: #e7edff;
+  color: #24439f;
+  font-size: 13px;
+  font-weight: bold;
+}
+
+.file-upload {
+  background: #f8faff;
+  border: 1px dashed #3157c8;
+  padding: 15px;
+  border-radius: 10px;
+  margin: 12px 0;
+}
 </style>
 </head>
 
@@ -842,7 +873,96 @@ mjx-container[display="true"] > svg {
             <div id="scoreList"></div>
           </div>
         </section>
+<!-- TUGAS GURU -->
+<section id="page-teacherAssignments" class="page-section">
 
+  <div class="card">
+
+    <h2>📂 Kelola Tugas</h2>
+
+    <p>
+      Buat tugas untuk siswa dan lihat hasil pengumpulan mereka.
+    </p>
+
+    <label>Judul Tugas</label>
+    <input
+      id="assignmentTitle"
+      type="text"
+      placeholder="Contoh: Latihan Integral Tak Tentu"
+    >
+
+    <label>Deskripsi Tugas</label>
+    <textarea
+      id="assignmentDescription"
+      placeholder="Tuliskan petunjuk atau instruksi tugas..."
+    ></textarea>
+
+    <label>Materi</label>
+    <select id="assignmentMaterial">
+      <option value="Umum">Umum</option>
+      <option value="1. Pengenalan Integral">
+        1. Pengenalan Integral
+      </option>
+      <option value="2. Integral Tak Tentu">
+        2. Integral Tak Tentu
+      </option>
+      <option value="3. Rumus Pangkat Integral">
+        3. Rumus Pangkat Integral
+      </option>
+      <option value="4. Sifat-Sifat Integral">
+        4. Sifat-Sifat Integral
+      </option>
+      <option value="5. Integral Tentu">
+        5. Integral Tentu
+      </option>
+      <option value="6. Luas Daerah di Bawah Kurva">
+        6. Luas Daerah di Bawah Kurva
+      </option>
+      <option value="7. Integral Fungsi Aljabar">
+        7. Integral Fungsi Aljabar
+      </option>
+      <option value="8. Aplikasi Integral">
+        8. Aplikasi Integral
+      </option>
+    </select>
+
+    <label>Deadline</label>
+    <input
+      id="assignmentDeadline"
+      type="datetime-local"
+    >
+
+    <button onclick="createAssignment()">
+      ➕ Buat Tugas
+    </button>
+
+    <div id="assignmentMessage"></div>
+
+  </div>
+
+
+  <div class="card">
+
+    <h2>Daftar Tugas</h2>
+
+    <div id="teacherAssignmentList">
+      Memuat tugas...
+    </div>
+
+  </div>
+
+
+  <div class="card">
+
+    <h2>📥 Pengumpulan Siswa</h2>
+
+    <div id="teacherSubmissionList">
+      Pilih tugas untuk melihat pengumpulan.
+    </div>
+
+  </div>
+
+</section>
         <!-- MATERI SISWA -->
         <section id="page-studentMaterials" class="page-section">
           <div class="card">
@@ -858,6 +978,25 @@ mjx-container[display="true"] > svg {
             <div id="studentQuestionList"></div>
           </div>
         </section>
+<!-- PENGUMPULAN TUGAS SISWA -->
+
+<section id="page-studentAssignments" class="page-section">
+
+  <div class="card">
+
+    <h2>📂 Pengumpulan Tugas</h2>
+
+    <p>
+      Lihat tugas, deadline, lalu upload jawabanmu di sini.
+    </p>
+
+    <div id="studentAssignmentList">
+      Memuat tugas...
+    </div>
+
+  </div>
+
+</section>
 <!-- FORUM DISKUSI SISWA DAN GURU -->
 <section id="page-forum" class="page-section">
   <div class="card">
@@ -977,6 +1116,13 @@ import {
   serverTimestamp
 } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
 
+import {
+  getStorage,
+  ref,
+  uploadBytes,
+  getDownloadURL
+} from "https://www.gstatic.com/firebasejs/12.7.0/firebase-storage.js";
+
 /* KONFIGURASI FIREBASE */
 
 const firebaseConfig = {
@@ -992,6 +1138,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
+const storage = getStorage(app);
 
 let currentUser = null;
 let currentRole = null;
@@ -1404,20 +1551,22 @@ const menus = {
     ["admin", "👥 Persetujuan Guru"]
   ],
 
-  teacher: [
-    ["home", "🏠 Beranda"],
-    ["teacherMaterials", "📚 Kelola Materi"],
-    ["teacherQuestions", "📝 Kelola Kuis"],
-    ["teacherScores", "📊 Nilai Siswa"],
-    ["forum", "💬 Forum Diskusi"]
-  ],
+teacher: [
+  ["home", "🏠 Beranda"],
+  ["teacherMaterials", "📚 Kelola Materi"],
+  ["teacherQuestions", "📝 Kelola Kuis"],
+  ["teacherAssignments", "📂 Kelola Tugas"],
+  ["teacherScores", "📊 Nilai Siswa"],
+  ["forum", "💬 Forum Diskusi"]
+],
 
-  student: [
-    ["home", "🏠 Beranda"],
-    ["studentMaterials", "📚 Materi Integral"],
-    ["studentQuestions", "📝 Kuis dan Latihan"],
-    ["forum", "💬 Forum Diskusi"]
-  ]
+student: [
+  ["home", "🏠 Beranda"],
+  ["studentMaterials", "📚 Materi Integral"],
+  ["studentQuestions", "📝 Kuis dan Latihan"],
+  ["studentAssignments", "📂 Pengumpulan Tugas"],
+  ["forum", "💬 Forum Diskusi"]
+]
 };
 
   $("sidebarMenu").innerHTML = "";
@@ -1627,11 +1776,16 @@ window.navigatePage = function(page) {
 const titles = {
   home: "Beranda",
   admin: "Persetujuan Guru",
+
   teacherMaterials: "Kelola Materi",
   teacherQuestions: "Kelola Kuis",
+  teacherAssignments: "Kelola Tugas",
   teacherScores: "Nilai Siswa",
+
   studentMaterials: "Materi Integral",
   studentQuestions: "Kuis dan Latihan",
+  studentAssignments: "Pengumpulan Tugas",
+
   forum: "Forum Diskusi"
 };
 
@@ -1644,6 +1798,8 @@ const titles = {
   if (page === "studentMaterials") loadStudentMaterials();
   if (page === "studentQuestions") loadStudentQuestions();
   if (page === "forum") loadForum();
+  if (page === "teacherAssignments") loadTeacherAssignments();
+  if (page === "studentAssignments") loadStudentAssignments();
 
 };
 
@@ -2736,7 +2892,792 @@ window.loadForum = async function() {
   }
 
 };
-  
+/* =====================================================
+   SISTEM PENGUMPULAN TUGAS
+   ===================================================== */
+
+
+/* ===============================
+   GURU: MEMBUAT TUGAS
+   =============================== */
+
+window.createAssignment = async function () {
+
+  if (!currentUser || currentRole !== "teacher") {
+    alert("Hanya Guru yang dapat membuat tugas.");
+    return;
+  }
+
+  const title = $("assignmentTitle").value.trim();
+  const description = $("assignmentDescription").value.trim();
+  const material = $("assignmentMaterial").value;
+  const deadline = $("assignmentDeadline").value;
+
+  if (!title || !description || !deadline) {
+    alert("Lengkapi judul, deskripsi, dan deadline.");
+    return;
+  }
+
+  try {
+
+    await addDoc(collection(db, "assignments"), {
+
+      title: title,
+      description: description,
+      material: material,
+      deadline: deadline,
+
+      teacherId: currentUser.uid,
+      teacherName: currentName,
+
+      createdAt: serverTimestamp()
+
+    });
+
+    $("assignmentTitle").value = "";
+    $("assignmentDescription").value = "";
+    $("assignmentDeadline").value = "";
+
+    $("assignmentMessage").className = "success";
+    $("assignmentMessage").textContent =
+      "Tugas berhasil dibuat.";
+
+    loadTeacherAssignments();
+
+  } catch (error) {
+
+    console.error(error);
+
+    $("assignmentMessage").className = "error";
+    $("assignmentMessage").textContent =
+      "Gagal membuat tugas: " + error.message;
+
+  }
+
+};
+
+
+/* ===============================
+   GURU: MENAMPILKAN TUGAS
+   =============================== */
+
+window.loadTeacherAssignments = async function () {
+
+  const host = $("teacherAssignmentList");
+
+  if (!host) return;
+
+  host.innerHTML = "Memuat tugas...";
+
+  try {
+
+    const snap = await getDocs(
+      collection(db, "assignments")
+    );
+
+    host.innerHTML = "";
+
+    let found = false;
+
+    snap.forEach(item => {
+
+      const task = item.data();
+
+      if (task.teacherId !== currentUser.uid) {
+        return;
+      }
+
+      found = true;
+
+      const div = document.createElement("div");
+      div.className = "item";
+
+      const title = document.createElement("h3");
+      title.textContent = task.title;
+
+      const material = document.createElement("p");
+      material.innerHTML =
+        "<b>Materi:</b> " +
+        escapeHTML(task.material);
+
+      const description = document.createElement("p");
+      description.textContent =
+        task.description;
+
+      const deadline = document.createElement("p");
+      deadline.innerHTML =
+        "<b>Deadline:</b> " +
+        formatDeadline(task.deadline);
+
+      const button = document.createElement("button");
+
+      button.textContent =
+        "📥 Lihat Pengumpulan";
+
+      button.onclick = () =>
+        loadTeacherSubmissions(item.id, task.title);
+
+      div.append(
+        title,
+        material,
+        description,
+        deadline,
+        button
+      );
+
+      host.appendChild(div);
+
+    });
+
+    if (!found) {
+
+      host.innerHTML =
+        "<p>Belum ada tugas yang dibuat.</p>";
+
+    }
+
+  } catch (error) {
+
+    console.error(error);
+
+    host.textContent =
+      "Gagal memuat tugas: " + error.message;
+
+  }
+
+};
+
+
+/* ===============================
+   GURU: LIHAT PENGUMPULAN
+   =============================== */
+
+window.loadTeacherSubmissions = async function (
+  assignmentId,
+  assignmentTitle
+) {
+
+  const host = $("teacherSubmissionList");
+
+  host.innerHTML =
+    "<h3>Pengumpulan: " +
+    escapeHTML(assignmentTitle) +
+    "</h3>" +
+    "<p>Memuat data siswa...</p>";
+
+  try {
+
+    const snap = await getDocs(
+      collection(db, "submissions")
+    );
+
+    host.innerHTML =
+      "<h3>📥 " +
+      escapeHTML(assignmentTitle) +
+      "</h3>";
+
+    let found = false;
+
+    snap.forEach(item => {
+
+      const submission = item.data();
+
+      if (
+        submission.assignmentId !== assignmentId
+      ) {
+        return;
+      }
+
+      found = true;
+
+      const div = document.createElement("div");
+      div.className = "item";
+
+      const student = document.createElement("h3");
+
+      student.textContent =
+        submission.studentName ||
+        submission.studentEmail ||
+        "Siswa";
+
+      const file = document.createElement("p");
+
+      file.innerHTML =
+        "<b>File:</b> " +
+        escapeHTML(submission.fileName || "-");
+
+      const submitted = document.createElement("p");
+
+      submitted.innerHTML =
+        "<b>Dikumpulkan:</b> " +
+        formatTimestamp(submission.submittedAt);
+
+      const status = document.createElement("p");
+
+      status.innerHTML =
+        "<b>Status:</b> " +
+        escapeHTML(submission.status || "Dikumpulkan");
+
+      const link = document.createElement("a");
+
+      link.href = submission.fileURL;
+      link.target = "_blank";
+      link.rel = "noopener noreferrer";
+      link.textContent =
+        "📄 Buka File Jawaban";
+
+      link.style.display = "inline-block";
+      link.style.margin = "8px 0";
+
+      const gradeLabel =
+        document.createElement("label");
+
+      gradeLabel.textContent =
+        "Nilai";
+
+      const gradeInput =
+        document.createElement("input");
+
+      gradeInput.type = "number";
+      gradeInput.min = "0";
+      gradeInput.max = "100";
+      gradeInput.value =
+        submission.grade ?? "";
+
+      const feedbackLabel =
+        document.createElement("label");
+
+      feedbackLabel.textContent =
+        "Feedback";
+
+      const feedbackInput =
+        document.createElement("textarea");
+
+      feedbackInput.value =
+        submission.feedback || "";
+
+      const saveButton =
+        document.createElement("button");
+
+      saveButton.textContent =
+        "💾 Simpan Nilai";
+
+      saveButton.onclick = async () => {
+
+        try {
+
+          await updateDoc(
+            doc(db, "submissions", item.id),
+            {
+              grade:
+                gradeInput.value === ""
+                  ? null
+                  : Number(gradeInput.value),
+
+              feedback:
+                feedbackInput.value.trim(),
+
+              status: "Dinilai",
+
+              gradedAt:
+                serverTimestamp(),
+
+              gradedBy:
+                currentUser.uid
+            }
+          );
+
+          alert(
+            "Nilai berhasil disimpan."
+          );
+
+          loadTeacherSubmissions(
+            assignmentId,
+            assignmentTitle
+          );
+
+        } catch (error) {
+
+          alert(
+            "Gagal menyimpan nilai: " +
+            error.message
+          );
+
+        }
+
+      };
+
+      div.append(
+        student,
+        file,
+        submitted,
+        status,
+        link,
+        gradeLabel,
+        gradeInput,
+        feedbackLabel,
+        feedbackInput,
+        saveButton
+      );
+
+      host.appendChild(div);
+
+    });
+
+    if (!found) {
+
+      host.innerHTML +=
+        "<p>Belum ada siswa yang mengumpulkan tugas ini.</p>";
+
+    }
+
+  } catch (error) {
+
+    console.error(error);
+
+    host.innerHTML =
+      "Gagal memuat pengumpulan: " +
+      error.message;
+
+  }
+
+};
+
+
+/* ===============================
+   SISWA: MENAMPILKAN TUGAS
+   =============================== */
+
+window.loadStudentAssignments = async function () {
+
+  const host =
+    $("studentAssignmentList");
+
+  if (!host) return;
+
+  host.innerHTML =
+    "Memuat tugas...";
+
+  try {
+
+    const assignmentSnap =
+      await getDocs(
+        collection(db, "assignments")
+      );
+
+    const submissionSnap =
+      await getDocs(
+        collection(db, "submissions")
+      );
+
+    const submissions = {};
+
+    submissionSnap.forEach(item => {
+
+      const data = item.data();
+
+      if (
+        data.studentId === currentUser.uid
+      ) {
+
+        submissions[data.assignmentId] =
+          data;
+
+      }
+
+    });
+
+    host.innerHTML = "";
+
+    let found = false;
+
+    assignmentSnap.forEach(item => {
+
+      const task = item.data();
+
+      found = true;
+
+      const submission =
+        submissions[item.id];
+
+      const div =
+        document.createElement("div");
+
+      div.className = "item";
+
+      const title =
+        document.createElement("h3");
+
+      title.textContent =
+        "📚 " + task.title;
+
+      const material =
+        document.createElement("p");
+
+      material.innerHTML =
+        "<b>Materi:</b> " +
+        escapeHTML(task.material);
+
+      const description =
+        document.createElement("p");
+
+      description.textContent =
+        task.description;
+
+      const deadline =
+        document.createElement("p");
+
+      deadline.innerHTML =
+        "<b>Deadline:</b> " +
+        formatDeadline(task.deadline);
+
+      div.append(
+        title,
+        material,
+        description,
+        deadline
+      );
+
+
+      /* JIKA SUDAH MENGUMPULKAN */
+
+      if (submission) {
+
+        const status =
+          document.createElement("div");
+
+        status.className =
+          "notice";
+
+        status.innerHTML =
+          "<b>Status:</b> " +
+          escapeHTML(
+            submission.status ||
+            "Sudah dikumpulkan"
+          );
+
+        div.appendChild(status);
+
+
+        if (submission.fileURL) {
+
+          const fileLink =
+            document.createElement("a");
+
+          fileLink.href =
+            submission.fileURL;
+
+          fileLink.target = "_blank";
+
+          fileLink.rel =
+            "noopener noreferrer";
+
+          fileLink.textContent =
+            "📄 Lihat File yang Dikumpulkan";
+
+          fileLink.style.display =
+            "inline-block";
+
+          fileLink.style.marginBottom =
+            "10px";
+
+          div.appendChild(fileLink);
+
+        }
+
+
+        if (
+          submission.grade !== null &&
+          submission.grade !== undefined
+        ) {
+
+          const grade =
+            document.createElement("p");
+
+          grade.innerHTML =
+            "<b>Nilai:</b> " +
+            submission.grade;
+
+          div.appendChild(grade);
+
+        }
+
+
+        if (submission.feedback) {
+
+          const feedback =
+            document.createElement("p");
+
+          feedback.innerHTML =
+            "<b>Feedback Guru:</b><br>" +
+            escapeHTML(
+              submission.feedback
+            );
+
+          div.appendChild(feedback);
+
+        }
+
+      }
+
+      /* JIKA BELUM MENGUMPULKAN */
+
+      else {
+
+        const fileInput =
+          document.createElement("input");
+
+        fileInput.type = "file";
+
+        fileInput.accept =
+          ".pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx,.jpg,.jpeg,.png";
+
+        const uploadButton =
+          document.createElement("button");
+
+        uploadButton.textContent =
+          "📤 Kumpulkan Tugas";
+
+        uploadButton.onclick =
+          () => submitAssignment(
+            item.id,
+            task.title,
+            fileInput
+          );
+
+        div.append(
+          fileInput,
+          uploadButton
+        );
+
+      }
+
+      host.appendChild(div);
+
+    });
+
+    if (!found) {
+
+      host.innerHTML =
+        "<p>Belum ada tugas dari Guru.</p>";
+
+    }
+
+  } catch (error) {
+
+    console.error(error);
+
+    host.textContent =
+      "Gagal memuat tugas: " +
+      error.message;
+
+  }
+
+};
+
+
+/* ===============================
+   SISWA: UPLOAD TUGAS
+   =============================== */
+
+window.submitAssignment =
+async function (
+  assignmentId,
+  assignmentTitle,
+  fileInput
+) {
+
+  if (!fileInput.files.length) {
+
+    alert(
+      "Pilih file jawaban terlebih dahulu."
+    );
+
+    return;
+
+  }
+
+  const file =
+    fileInput.files[0];
+
+  /* BATASI UKURAN 10 MB */
+
+  const maxSize =
+    10 * 1024 * 1024;
+
+  if (file.size > maxSize) {
+
+    alert(
+      "Ukuran file maksimal 10 MB."
+    );
+
+    return;
+
+  }
+
+  try {
+
+    const safeName =
+      file.name.replace(
+        /[^a-zA-Z0-9._-]/g,
+        "_"
+      );
+
+    const filePath =
+      "submissions/" +
+      currentUser.uid +
+      "/" +
+      Date.now() +
+      "_" +
+      safeName;
+
+    const storageRef =
+      ref(storage, filePath);
+
+    await uploadBytes(
+      storageRef,
+      file
+    );
+
+    const fileURL =
+      await getDownloadURL(
+        storageRef
+      );
+
+    await addDoc(
+      collection(db, "submissions"),
+      {
+
+        assignmentId:
+          assignmentId,
+
+        assignmentTitle:
+          assignmentTitle,
+
+        studentId:
+          currentUser.uid,
+
+        studentName:
+          currentName,
+
+        studentEmail:
+          currentUser.email,
+
+        fileName:
+          file.name,
+
+        filePath:
+          filePath,
+
+        fileURL:
+          fileURL,
+
+        status:
+          "Dikumpulkan",
+
+        grade:
+          null,
+
+        feedback:
+          "",
+
+        submittedAt:
+          serverTimestamp()
+
+      }
+    );
+
+    alert(
+      "Tugas berhasil dikumpulkan."
+    );
+
+    loadStudentAssignments();
+
+  } catch (error) {
+
+    console.error(error);
+
+    alert(
+      "Gagal mengumpulkan tugas: " +
+      error.message
+    );
+
+  }
+
+};
+
+
+/* ===============================
+   HELPER
+   =============================== */
+
+function formatDeadline(value) {
+
+  if (!value) return "-";
+
+  const date =
+    new Date(value);
+
+  if (isNaN(date.getTime())) {
+    return value;
+  }
+
+  return date.toLocaleString(
+    "id-ID",
+    {
+      dateStyle: "long",
+      timeStyle: "short"
+    }
+  );
+
+}
+
+
+function formatTimestamp(timestamp) {
+
+  if (!timestamp) return "-";
+
+  try {
+
+    if (
+      typeof timestamp.toDate ===
+      "function"
+    ) {
+
+      return timestamp
+        .toDate()
+        .toLocaleString(
+          "id-ID"
+        );
+
+    }
+
+    return "-";
+
+  } catch {
+
+    return "-";
+
+  }
+
+}
+
+
+function escapeHTML(value) {
+
+  if (value === null ||
+      value === undefined) {
+    return "";
+  }
+
+  return String(value)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+
+}
 </script>
 </body>
 </html>
