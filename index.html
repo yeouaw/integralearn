@@ -493,191 +493,160 @@ main {
 
 <!-- HALAMAN APLIKASI -->
 
+
 <section id="appPage" class="hidden">
 
-<header>
-  <b>📘 IntegraLearn</b>
+  <div class="app-layout">
 
-  <div>
-    <span id="userLabel"></span>
-    <button class="danger" onclick="logout()">Keluar</button>
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+
+      <div class="sidebar-brand">📘 IntegraLearn</div>
+
+      <div class="sidebar-label">MENU UTAMA</div>
+
+      <nav id="sidebarMenu" class="sidebar-menu"></nav>
+
+      <div class="sidebar-bottom">
+        <button class="danger" onclick="logout()">Keluar</button>
+      </div>
+
+    </aside>
+
+    <!-- AREA KONTEN -->
+    <div class="main-area">
+
+      <header class="app-topbar">
+        <b id="pageTitle">Beranda</b>
+        <span id="userLabel"></span>
+      </header>
+
+      <main class="app-content">
+
+        <!-- BERANDA -->
+        <section id="page-home" class="page-section active">
+
+          <div class="welcome">
+            <h1 id="welcomeTitle">Selamat datang!</h1>
+            <p id="welcomeText"></p>
+          </div>
+
+          <div id="homeCards" class="home-cards"></div>
+
+          <div class="card">
+            <h2 id="homeHeading">Selamat Belajar!</h2>
+            <p id="homeDescription">
+              Pilih menu di sebelah kiri untuk mulai menggunakan IntegraLearn.
+            </p>
+            <div id="homeShortcuts" class="home-shortcut"></div>
+          </div>
+
+        </section>
+
+        <!-- ADMIN -->
+        <section id="page-admin" class="page-section">
+          <div class="card">
+            <h2>Dashboard Admin</h2>
+            <p>Kelola pengguna dan persetujuan pendaftaran Guru.</p>
+            <button onclick="loadAdminUsers()">Muat ulang pengguna</button>
+            <div id="adminUsers"></div>
+          </div>
+        </section>
+
+        <!-- MATERI GURU -->
+        <section id="page-teacherMaterials" class="page-section">
+          <div class="card">
+            <h2>Tambah Materi</h2>
+
+            <label>Judul materi</label>
+            <input id="materialTitle" placeholder="Judul materi">
+
+            <label>Isi materi</label>
+            <textarea id="materialBody"
+              placeholder="Tuliskan materi di sini"></textarea>
+
+            <button onclick="addMaterial()">Simpan materi</button>
+
+            <div id="teacherMaterialList"></div>
+          </div>
+        </section>
+
+        <!-- KUIS GURU -->
+        <section id="page-teacherQuestions" class="page-section">
+          <div class="card">
+            <h2>Tambah Kuis Integral</h2>
+
+            <p class="small">
+              Masukkan pertanyaan dan rumus matematika menggunakan LaTeX.
+            </p>
+
+            <label>Pertanyaan</label>
+            <input id="questionText" placeholder="Tuliskan pertanyaan">
+
+            <label>Persamaan Matematika (LaTeX)</label>
+            <textarea id="questionEquation"
+              placeholder="\int (3x^2+4x-2)\,dx"></textarea>
+
+            <p class="small">
+              Tulis tanpa tanda pembungkus $ atau \[ \].
+            </p>
+
+            <label>Pilihan A</label>
+            <input id="optionA" placeholder="Pilihan A">
+
+            <label>Pilihan B</label>
+            <input id="optionB" placeholder="Pilihan B">
+
+            <label>Pilihan C</label>
+            <input id="optionC" placeholder="Pilihan C">
+
+            <label>Pilihan D</label>
+            <input id="optionD" placeholder="Pilihan D">
+
+            <label>Jawaban benar</label>
+            <select id="correctAnswer">
+              <option value="0">A</option>
+              <option value="1">B</option>
+              <option value="2">C</option>
+              <option value="3">D</option>
+            </select>
+
+            <button onclick="addQuestion()">Simpan soal</button>
+
+            <div id="teacherQuestionList"></div>
+          </div>
+        </section>
+
+        <!-- NILAI GURU -->
+        <section id="page-teacherScores" class="page-section">
+          <div class="card">
+            <h2>Nilai Siswa</h2>
+            <div id="scoreList"></div>
+          </div>
+        </section>
+
+        <!-- MATERI SISWA -->
+        <section id="page-studentMaterials" class="page-section">
+          <div class="card">
+            <h2>Materi Pembelajaran Integral</h2>
+            <div id="studentMaterialList"></div>
+          </div>
+        </section>
+
+        <!-- KUIS SISWA -->
+        <section id="page-studentQuestions" class="page-section">
+          <div class="card">
+            <h2>Kuis dan Latihan Integral</h2>
+            <div id="studentQuestionList"></div>
+          </div>
+        </section>
+
+      </main>
+    </div>
   </div>
-</header>
 
-<main>
-
-  <div class="welcome">
-    <h1 id="welcomeTitle">Selamat datang!</h1>
-    <p id="welcomeText"></p>
-  </div>
-
-  <!-- DASHBOARD ADMIN -->
-
-  <section id="adminArea" class="hidden">
-
-    <div class="card">
-      <h2>Dashboard Admin</h2>
-      <p>Kelola pengguna dan persetujuan pendaftaran guru.</p>
-
-      <button onclick="loadAdminUsers()">
-        Muat ulang pengguna
-      </button>
-
-      <div id="adminUsers"></div>
-    </div>
-
-  </section>
-
-  <!-- DASHBOARD GURU -->
-
-  <section id="teacherArea" class="hidden">
-
-    <div class="grid">
-
-      <div class="tile">
-        <h3>📚 Materi</h3>
-        <p>Tambahkan dan kelola materi pembelajaran.</p>
-        <button onclick="openPanel('teacherMaterials')">
-          Kelola materi
-        </button>
-      </div>
-
-      <div class="tile">
-        <h3>📝 Kuis</h3>
-        <p>Buat soal pilihan ganda untuk siswa.</p>
-        <button onclick="openPanel('teacherQuestions')">
-          Kelola kuis
-        </button>
-      </div>
-
-      <div class="tile">
-        <h3>📊 Nilai siswa</h3>
-        <p>Lihat hasil pengerjaan kuis siswa.</p>
-        <button onclick="openPanel('teacherScores')">
-          Lihat nilai
-        </button>
-      </div>
-
-    </div>
-
-    <!-- MATERI GURU -->
-
-    <div id="teacherMaterials" class="card panel hidden">
-
-      <h2>Tambah Materi</h2>
-
-      <label>Judul materi</label>
-      <input id="materialTitle" placeholder="Judul materi">
-
-      <label>Isi materi</label>
-      <textarea id="materialBody"
-        placeholder="Tuliskan materi di sini"></textarea>
-
-      <button onclick="addMaterial()">Simpan materi</button>
-
-      <div id="teacherMaterialList"></div>
-
-    </div>
-
-    <!-- KUIS GURU -->
-
-    <div id="teacherQuestions" class="card panel hidden">
-
-      <h2>Tambah Kuis Integral</h2>
-
-      <p class="small">
-        Masukkan pertanyaan dan rumus matematika menggunakan LaTeX.
-      </p>
-
-      <label>Pertanyaan</label>
-      <input id="questionText"
-        placeholder="Tuliskan pertanyaan">
-
-      <label>Persamaan Matematika (LaTeX)</label>
-      <textarea id="questionEquation"
-        placeholder="\int (3x^2+4x-2)\,dx"></textarea>
-
-      <p class="small">
-        Contoh: \int x^2\,dx
-        <br>
-        Tulis tanpa tanda pembungkus $ atau \[ \].
-      </p>
-
-      <label>Pilihan A</label>
-      <input id="optionA" placeholder="Contoh: $\frac{x^3}{3}+C$">
-
-      <label>Pilihan B</label>
-      <input id="optionB" placeholder="Pilihan B">
-
-      <label>Pilihan C</label>
-      <input id="optionC" placeholder="Pilihan C">
-
-      <label>Pilihan D</label>
-      <input id="optionD" placeholder="Pilihan D">
-
-      <label>Jawaban benar</label>
-      <select id="correctAnswer">
-        <option value="0">A</option>
-        <option value="1">B</option>
-        <option value="2">C</option>
-        <option value="3">D</option>
-      </select>
-
-      <button onclick="addQuestion()">Simpan soal</button>
-
-      <div id="teacherQuestionList"></div>
-
-    </div>
-
-    <!-- NILAI GURU -->
-
-    <div id="teacherScores" class="card panel hidden">
-
-      <h2>Nilai Siswa</h2>
-      <div id="scoreList"></div>
-
-    </div>
-
-  </section>
-
-  <!-- DASHBOARD SISWA -->
-
-  <section id="studentArea" class="hidden">
-
-    <div class="grid">
-
-      <div class="tile">
-        <h3>📚 Materi Pembelajaran</h3>
-        <p>Pelajari materi integral yang dibagikan guru.</p>
-        <button onclick="openPanel('studentMaterials')">
-          Buka materi
-        </button>
-      </div>
-
-      <div class="tile">
-        <h3>📝 Kuis dan Latihan</h3>
-        <p>Kerjakan soal dan lihat hasil belajarmu.</p>
-        <button onclick="openPanel('studentQuestions')">
-          Mulai kuis
-        </button>
-      </div>
-
-    </div>
-
-    <div id="studentMaterials" class="card panel hidden">
-      <h2>Materi Pembelajaran</h2>
-      <div id="studentMaterialList"></div>
-    </div>
-
-    <div id="studentQuestions" class="card panel hidden">
-      <h2>Kuis Matematika</h2>
-      <div id="studentQuestionList"></div>
-    </div>
-
-  </section>
-
-</main>
 </section>
+
 
 <!-- FIREBASE DAN JAVASCRIPT -->
 
