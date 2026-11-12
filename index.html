@@ -1358,6 +1358,7 @@ async function loadTeacherMaterials() {
 
 }
 
+
 /* SISWA: MELIHAT MATERI */
 
 async function loadStudentMaterials() {
@@ -1376,23 +1377,44 @@ async function loadStudentMaterials() {
       return;
     }
 
-    snap.forEach(item => {
+    const grid = document.createElement("div");
+    grid.className = "material-grid";
+
+    snap.forEach((item, index) => {
 
       const m = item.data();
 
-      const div = document.createElement("div");
-      div.className = "item";
+      const card = document.createElement("button");
+      card.type = "button";
+      card.className = "material-card";
 
-      const h = document.createElement("h3");
-      h.textContent = m.title;
+      const icon = document.createElement("div");
+      icon.className = "material-icon";
+      icon.textContent = "∫";
 
-      const p = document.createElement("p");
-      p.textContent = m.body;
+      const number = document.createElement("p");
+      number.textContent = "Materi " + (index + 1);
 
-      div.append(h, p);
-      host.appendChild(div);
+      const title = document.createElement("h3");
+      title.textContent = m.title || "Tanpa Judul";
+
+      const description = document.createElement("p");
+      const body = m.body || "";
+
+      description.textContent =
+        body.slice(0, 110) + (body.length > 110 ? "..." : "");
+
+      card.append(icon, number, title, description);
+
+      card.addEventListener("click", () => {
+        openMaterialModal(m.title || "Materi Integral", body);
+      });
+
+      grid.appendChild(card);
 
     });
+
+    host.appendChild(grid);
 
   } catch (error) {
 
@@ -1401,6 +1423,38 @@ async function loadStudentMaterials() {
   }
 
 }
+
+/* MEMBUKA POP-UP MATERI */
+
+async function openMaterialModal(title, body) {
+
+  $("modalMaterialTitle").textContent = title;
+  $("modalMaterialBody").textContent = body;
+
+  $("materialModal").classList.remove("hidden");
+
+  await renderMath($("modalMaterialBody"));
+
+}
+
+/* MENUTUP POP-UP MATERI */
+
+window.closeMaterialModal = function() {
+  $("materialModal").classList.add("hidden");
+};
+
+$("materialModal").addEventListener("click", function(event) {
+  if (event.target === this) {
+    closeMaterialModal();
+  }
+});
+
+document.addEventListener("keydown", function(event) {
+  if (event.key === "Escape") {
+    closeMaterialModal();
+  }
+});
+
 
 /* GURU: TAMBAH KUIS */
 
