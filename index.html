@@ -273,6 +273,155 @@ main {
   line-height: 1.7;
 }
 
+/* ===== SIDEBAR INTEGRALEARN ===== */
+
+.app-layout {
+  display: flex;
+  min-height: 100vh;
+}
+
+.sidebar {
+  width: 250px;
+  min-width: 250px;
+  background: #172b65;
+  color: white;
+  padding: 24px 15px;
+  display: flex;
+  flex-direction: column;
+}
+
+.sidebar-brand {
+  font-size: 22px;
+  font-weight: bold;
+  padding: 8px 12px 28px;
+}
+
+.sidebar-label {
+  font-size: 11px;
+  color: #aebde8;
+  padding: 12px;
+  letter-spacing: 1px;
+}
+
+.sidebar-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.sidebar-menu button {
+  background: transparent;
+  color: #e4eaff;
+  text-align: left;
+  width: 100%;
+}
+
+.sidebar-menu button.active,
+.sidebar-menu button:hover {
+  background: #3157c8;
+  color: white;
+}
+
+.sidebar-bottom {
+  margin-top: auto;
+  padding-top: 25px;
+}
+
+.main-area {
+  flex: 1;
+  min-width: 0;
+}
+
+.app-topbar {
+  background: white;
+  padding: 17px 25px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.app-content {
+  max-width: 1200px;
+  margin: 25px auto;
+  padding: 0 25px 35px;
+}
+
+.home-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit,minmax(190px,1fr));
+  gap: 16px;
+  margin: 20px 0;
+}
+
+.home-card {
+  background: white;
+  padding: 21px;
+  border-radius: 14px;
+  box-shadow: 0 4px 15px #00000008;
+}
+
+.home-card h3 {
+  color: #3157c8;
+}
+
+.page-section {
+  display: none;
+}
+
+.page-section.active {
+  display: block;
+}
+
+.home-shortcut {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 20px;
+}
+
+@media(max-width:760px) {
+  .app-layout {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    width: 100%;
+    min-width: 0;
+    padding: 12px;
+  }
+
+  .sidebar-brand {
+    padding: 8px 10px 14px;
+  }
+
+  .sidebar-label {
+    display: none;
+  }
+
+  .sidebar-menu {
+    flex-direction: row;
+    overflow-x: auto;
+    padding-bottom: 5px;
+  }
+
+  .sidebar-menu button {
+    width: auto;
+    white-space: nowrap;
+    font-size: 13px;
+  }
+
+  .sidebar-bottom {
+    padding-top: 10px;
+  }
+
+  .app-content {
+    padding: 0 14px 25px;
+    margin-top: 16px;
+  }
+}
+  
 @media(max-width:600px) {
   .login { margin: 20px 12px; }
   .card { padding: 18px; }
