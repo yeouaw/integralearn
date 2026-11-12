@@ -1113,6 +1113,8 @@ import {
   addDoc,
   getDocs,
   updateDoc,
+  query,
+  where,
   serverTimestamp
 } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
 
@@ -3240,28 +3242,46 @@ window.loadTeacherSubmissions = async function (
 /* ===============================
    SISWA: MENAMPILKAN TUGAS
    =============================== */
-
 window.loadStudentAssignments = async function () {
 
-  const host =
-    $("studentAssignmentList");
+  const host = $("studentAssignmentList");
 
   if (!host) return;
 
-  host.innerHTML =
-    "Memuat tugas...";
+  host.innerHTML = "Memuat tugas...";
 
   try {
 
-    const assignmentSnap =
-      await getDocs(
-        collection(db, "assignments")
-      );
+    /* =========================
+       AMBIL SEMUA TUGAS
+       ========================= */
 
-    const submissionSnap =
-      await getDocs(
-        collection(db, "submissions")
-      );
+    const assignmentSnap = await getDocs(
+      collection(db, "assignments")
+    );
+
+
+    /* =========================
+       AMBIL SUBMISSION MILIK SISWA
+       ========================= */
+
+    const submissionQuery = query(
+      collection(db, "submissions"),
+      where(
+        "studentId",
+        "==",
+        currentUser.uid
+      )
+    );
+
+    const submissionSnap = await getDocs(
+      submissionQuery
+    );
+
+
+    /* =========================
+       SIMPAN SUBMISSION SISWA
+       ========================= */
 
     const submissions = {};
 
@@ -3269,16 +3289,14 @@ window.loadStudentAssignments = async function () {
 
       const data = item.data();
 
-      if (
-        data.studentId === currentUser.uid
-      ) {
-
-        submissions[data.assignmentId] =
-          data;
-
-      }
+      submissions[data.assignmentId] = data;
 
     });
+
+
+    /* =========================
+       TAMPILKAN TUGAS
+       ========================= */
 
     host.innerHTML = "";
 
@@ -3293,36 +3311,54 @@ window.loadStudentAssignments = async function () {
       const submission =
         submissions[item.id];
 
+
       const div =
         document.createElement("div");
 
       div.className = "item";
 
+
+      /* JUDUL */
+
       const title =
         document.createElement("h3");
 
       title.textContent =
-        "📚 " + task.title;
+        "📚 " + (task.title || "Tugas");
+
+
+      /* MATERI */
 
       const material =
         document.createElement("p");
 
       material.innerHTML =
         "<b>Materi:</b> " +
-        escapeHTML(task.material);
+        escapeHTML(
+          task.material || "-"
+        );
+
+
+      /* DESKRIPSI */
 
       const description =
         document.createElement("p");
 
       description.textContent =
-        task.description;
+        task.description || "";
+
+
+      /* DEADLINE */
 
       const deadline =
         document.createElement("p");
 
       deadline.innerHTML =
         "<b>Deadline:</b> " +
-        formatDeadline(task.deadline);
+        formatDeadline(
+          task.deadline
+        );
+
 
       div.append(
         title,
@@ -3332,7 +3368,9 @@ window.loadStudentAssignments = async function () {
       );
 
 
-      /* JIKA SUDAH MENGUMPULKAN */
+      /* =========================
+         SUDAH MENGUMPULKAN
+         ========================= */
 
       if (submission) {
 
@@ -3346,39 +3384,45 @@ window.loadStudentAssignments = async function () {
           "<b>Status:</b> " +
           escapeHTML(
             submission.status ||
-            "Sudah dikumpulkan"
+            "Dikumpulkan"
           );
 
         div.appendChild(status);
 
+
+        /* LINK GOOGLE DRIVE */
+
         if (submission.submissionLink) {
 
-  const fileLink =
-    document.createElement("a");
+          const fileLink =
+            document.createElement("a");
 
-  fileLink.href =
-    submission.submissionLink;
+          fileLink.href =
+            submission.submissionLink;
 
-  fileLink.target =
-    "_blank";
+          fileLink.target =
+            "_blank";
 
-  fileLink.rel =
-    "noopener noreferrer";
+          fileLink.rel =
+            "noopener noreferrer";
 
-  fileLink.textContent =
-    "📄 Lihat Tugas yang Dikumpulkan";
+          fileLink.textContent =
+            "📄 Lihat Tugas yang Dikumpulkan";
 
-  fileLink.style.display =
-    "inline-block";
+          fileLink.style.display =
+            "inline-block";
 
-  fileLink.style.marginBottom =
-    "10px";
+          fileLink.style.marginBottom =
+            "10px";
 
-  div.appendChild(
-    fileLink
-  );
+          div.appendChild(
+            fileLink
+          );
 
-}
+        }
+
+
+        /* NILAI */
 
         if (
           submission.grade !== null &&
@@ -3390,12 +3434,18 @@ window.loadStudentAssignments = async function () {
 
           grade.innerHTML =
             "<b>Nilai:</b> " +
-            submission.grade;
+            escapeHTML(
+              submission.grade
+            );
 
-          div.appendChild(grade);
+          div.appendChild(
+            grade
+          );
 
         }
 
+
+        /* FEEDBACK */
 
         if (submission.feedback) {
 
@@ -3408,52 +3458,70 @@ window.loadStudentAssignments = async function () {
               submission.feedback
             );
 
-          div.appendChild(feedback);
+          div.appendChild(
+            feedback
+          );
 
         }
 
       }
 
-      /* JIKA BELUM MENGUMPULKAN */
+
+      /* =========================
+         BELUM MENGUMPULKAN
+         ========================= */
 
       else {
 
-const linkLabel =
-  document.createElement("label");
+        const linkLabel =
+          document.createElement("label");
 
-linkLabel.textContent =
-  "Link Google Drive Tugas";
+        linkLabel.textContent =
+          "Link Google Drive Tugas";
 
-const linkInput =
-  document.createElement("input");
 
-linkInput.type = "url";
-linkInput.placeholder =
-  "https://drive.google.com/...";
+        const linkInput =
+          document.createElement("input");
 
-const uploadButton =
-  document.createElement("button");
+        linkInput.type =
+          "url";
 
-uploadButton.textContent =
-  "📤 Kumpulkan Tugas";
+        linkInput.placeholder =
+          "https://drive.google.com/...";
 
-uploadButton.onclick =
-  () => submitAssignment(
-    item.id,
-    task.title,
-    linkInput
-  );
 
-div.append(
-  linkLabel,
-  linkInput,
-  uploadButton
-);
+        const uploadButton =
+          document.createElement("button");
+
+        uploadButton.textContent =
+          "📤 Kumpulkan Tugas";
+
+        uploadButton.onclick =
+          () =>
+            submitAssignment(
+              item.id,
+              task.title,
+              linkInput
+            );
+
+
+        div.append(
+          linkLabel,
+          linkInput,
+          uploadButton
+        );
+
       }
+
 
       host.appendChild(div);
 
     });
+
+
+    /* =========================
+       JIKA BELUM ADA TUGAS
+       ========================= */
 
     if (!found) {
 
@@ -3473,7 +3541,7 @@ div.append(
   }
 
 };
-
+  
 /* ===============================
    SISWA: KUMPULKAN TUGAS
    =============================== */
@@ -3498,7 +3566,6 @@ async function (
 
   }
 
-  /* CEK LINK GOOGLE DRIVE */
 
   if (
     !submissionLink.includes(
@@ -3507,12 +3574,13 @@ async function (
   ) {
 
     alert(
-      "Gunakan link file dari Google Drive."
+      "Gunakan link dari Google Drive."
     );
 
     return;
 
   }
+
 
   try {
 
@@ -3553,11 +3621,13 @@ async function (
       }
     );
 
+
     alert(
       "Tugas berhasil dikumpulkan."
     );
 
-    loadStudentAssignments();
+
+    await loadStudentAssignments();
 
   } catch (error) {
 
