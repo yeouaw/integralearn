@@ -2328,7 +2328,415 @@ async function loadScores() {
   }
 
 }
+  /* ===== FORUM DISKUSI SISWA DAN GURU ===== */
 
+// Mengatur format tanggal diskusi
+function forumFormatDate(timestamp) {
+  if (!timestamp || typeof timestamp.toDate !== "function") {
+    return "Baru saja";
+  }
+
+  return timestamp.toDate().toLocaleString("id-ID", {
+    day: "2-digit",
+    month: "long",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit"
+  });
+}
+
+// Mengubah kode peran menjadi tulisan
+function forumRoleLabel(role) {
+  if (role === "teacher") return "Guru";
+  if (role === "student") return "Siswa";
+
+  return role || "Pengguna";
+}
+
+
+// =====================================
+// 1. MEMBUAT DISKUSI BARU
+// =====================================
+
+window.createDiscussion = async function() {
+
+  const title = $("forumTitle").value.trim();
+  const content = $("forumContent").value.trim();
+  const material = $("forumMaterial").value;
+  const messageBox = $("forumMessage");
+
+  if (!currentUser) {
+    messageBox.textContent = "Silakan masuk terlebih dahulu.";
+    return;
+  }
+
+  if (!title || !content) {
+    messageBox.textContent =
+      "Judul dan isi diskusi wajib diisi.";
+    return;
+  }
+
+  messageBox.textContent = "Menyimpan diskusi...";
+
+  try {
+
+    await addDoc(collection(db, "discussions"), {
+
+      title: title,
+      content: content,
+      material: material,
+
+      authorUid: currentUser.uid,
+      authorName: currentName || currentUser.email || "Pengguna",
+      authorRole: currentRole,
+
+      createdAt: serverTimestamp()
+
+    });
+
+    // Mengosongkan formulir
+    $("forumTitle").value = "";
+    $("forumContent").value = "";
+    $("forumMaterial").value = "Umum";
+
+    messageBox.textContent =
+      "Diskusi berhasil dipublikasikan.";
+
+    messageBox.className = "success";
+
+    // Memuat ulang daftar diskusi
+    await loadForum();
+
+  } catch (error) {
+
+    messageBox.textContent =
+      "Gagal menyimpan diskusi: " + error.message;
+
+    messageBox.className = "error";
+
+  }
+};
+
+
+// =====================================
+// 2. MEMBALAS DISKUSI
+// =====================================
+
+window.replyToDiscussion = async function(
+  discussionId,
+  textareaId,
+  statusId
+) {
+
+  const field = $(textareaId);
+  const status = $(statusId);
+
+  const content = field ? field.value.trim() : "";
+
+  if (!currentUser) {
+    status.textContent = "Silakan masuk terlebih dahulu.";
+    return;
+  }
+
+  if (!content) {
+    status.textContent = "Balasan tidak boleh kosong.";
+    return;
+  }
+
+  status.textContent = "Mengirim balasan...";
+
+  try {
+
+    await addDoc(
+      collection(db, "discussions", discussionId, "replies"),
+      {
+        content: content,
+
+        authorUid: currentUser.uid,
+        authorName: currentName || currentUser.email || "Pengguna",
+        authorRole: currentRole,
+
+        createdAt: serverTimestamp()
+      }
+    );
+
+    field.value = "";
+
+    status.textContent = "Balasan berhasil dikirim.";
+
+    await loadForum();
+
+  } catch (error) {
+
+    status.textContent =
+      "Gagal mengirim balasan: " + error.message;
+
+  }
+
+};
+
+
+// =====================================
+// 3. MENAMPILKAN DAFTAR DISKUSI
+// =====================================
+
+window.loadForum = async function() {
+
+  const host = $("forumList");
+
+  if (!host) return;
+
+  host.textContent = "Memuat diskusi...";
+
+  try {
+
+    const snapshot = await getDocs(
+      collection(db, "discussions")
+    );
+
+    const discussions = snapshot.docs.map(item => ({
+      id: item.id,
+      ...item.data()
+    }));
+
+    // Mengurutkan diskusi terbaru terlebih dahulu
+    discussions.sort((a, b) => {
+
+      const aTime =
+        a.createdAt && a.createdAt.toMillis
+          ? a.createdAt.toMillis()
+          : 0;
+
+      const bTime =
+        b.createdAt && b.createdAt.toMillis
+          ? b.createdAt.toMillis()
+          : 0;
+
+      return bTime - aTime;
+
+    });
+
+    host.innerHTML = "";
+
+    if (discussions.length === 0) {
+
+      host.innerHTML =
+        '<p class="notice">Belum ada diskusi. Jadilah yang pertama memulai diskusi!</p>';
+
+      return;
+    }
+
+
+    // Menampilkan setiap topik diskusi
+    for (const discussion of discussions) {
+
+      const article = document.createElement("article");
+      article.className = "forum-post";
+
+      // Judul diskusi
+      const heading = document.createElement("h3");
+      heading.textContent =
+        discussion.title || "Diskusi tanpa judul";
+
+      // Informasi penulis
+      const meta = document.createElement("div");
+      meta.className = "forum-meta";
+
+      meta.textContent =
+        (discussion.authorName || "Pengguna") +
+        " • " +
+        forumRoleLabel(discussion.authorRole) +
+        " • " +
+        forumFormatDate(discussion.createdAt);
+
+      // Label materi
+      const tag = document.createElement("span");
+      tag.className = "forum-tag";
+      tag.textContent = discussion.material || "Umum";
+
+      // Isi diskusi
+      const content = document.createElement("div");
+      content.className = "forum-content";
+      content.textContent = discussion.content || "";
+
+      // Bagian balasan
+      const repliesWrap = document.createElement("div");
+      repliesWrap.className = "forum-replies";
+
+      const repliesHeading = document.createElement("b");
+      repliesHeading.textContent = "Jawaban dan tanggapan";
+
+      repliesWrap.appendChild(repliesHeading);
+
+      const repliesHost = document.createElement("div");
+      repliesHost.textContent = "Memuat balasan...";
+
+      repliesWrap.appendChild(repliesHost);
+
+
+      // Form untuk membalas diskusi
+      const replyForm = document.createElement("div");
+      replyForm.className = "forum-reply-form";
+
+      const replyInput = document.createElement("textarea");
+
+      const replyInputId = "reply-" + discussion.id;
+
+      replyInput.id = replyInputId;
+      replyInput.maxLength = 3000;
+      replyInput.placeholder =
+        "Tulis jawaban atau tanggapan...";
+
+      const replyButton = document.createElement("button");
+
+      replyButton.type = "button";
+      replyButton.textContent = "Kirim Jawaban";
+
+      const replyStatus = document.createElement("div");
+
+      const replyStatusId =
+        "reply-status-" + discussion.id;
+
+      replyStatus.id = replyStatusId;
+      replyStatus.className = "small";
+
+      replyButton.addEventListener("click", () => {
+
+        replyToDiscussion(
+          discussion.id,
+          replyInputId,
+          replyStatusId
+        );
+
+      });
+
+      replyForm.append(
+        replyInput,
+        replyButton,
+        replyStatus
+      );
+
+      repliesWrap.appendChild(replyForm);
+
+      article.append(
+        heading,
+        meta,
+        tag,
+        content,
+        repliesWrap
+      );
+
+      host.appendChild(article);
+
+
+      // Mengambil balasan dari Firestore
+      try {
+
+        const replySnapshot = await getDocs(
+          collection(
+            db,
+            "discussions",
+            discussion.id,
+            "replies"
+          )
+        );
+
+        const replies = replySnapshot.docs.map(
+          item => item.data()
+        );
+
+        // Mengurutkan balasan dari yang paling lama
+        replies.sort((a, b) => {
+
+          const aTime =
+            a.createdAt && a.createdAt.toMillis
+              ? a.createdAt.toMillis()
+              : 0;
+
+          const bTime =
+            b.createdAt && b.createdAt.toMillis
+              ? b.createdAt.toMillis()
+              : 0;
+
+          return aTime - bTime;
+
+        });
+
+        repliesHost.innerHTML = "";
+
+        if (replies.length === 0) {
+
+          const empty = document.createElement("p");
+
+          empty.className = "small";
+
+          empty.textContent =
+            "Belum ada jawaban. Silakan berikan tanggapan.";
+
+          repliesHost.appendChild(empty);
+
+        } else {
+
+          // Menampilkan setiap balasan
+          replies.forEach(reply => {
+
+            const item = document.createElement("div");
+            item.className = "forum-reply";
+
+            const author = document.createElement("b");
+
+            author.textContent =
+              (reply.authorName || "Pengguna") +
+              " (" +
+              forumRoleLabel(reply.authorRole) +
+              ")";
+
+            const date = document.createElement("div");
+            date.className = "forum-meta";
+
+            date.textContent =
+              forumFormatDate(reply.createdAt);
+
+            const text = document.createElement("p");
+
+            text.textContent = reply.content || "";
+
+            item.append(
+              author,
+              date,
+              text
+            );
+
+            repliesHost.appendChild(item);
+
+          });
+
+        }
+
+      } catch (replyError) {
+
+        repliesHost.textContent =
+          "Balasan tidak dapat dimuat: " +
+          replyError.message;
+
+      }
+
+    }
+
+    // Memproses rumus matematika jika terdapat LaTeX
+    await renderMath(host);
+
+  } catch (error) {
+
+    host.textContent =
+      "Gagal memuat forum: " +
+      error.message +
+      ". Pastikan aturan keamanan Firestore sudah mengizinkan akses forum.";
+
+  }
+
+};
+  
 </script>
 </body>
 </html>
