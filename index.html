@@ -1116,12 +1116,6 @@ import {
   serverTimestamp
 } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
 
-import {
-  getStorage,
-  ref,
-  uploadBytes,
-  getDownloadURL
-} from "https://www.gstatic.com/firebasejs/12.7.0/firebase-storage.js";
 
 /* KONFIGURASI FIREBASE */
 
@@ -1138,7 +1132,6 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
-const storage = getStorage(app);
 
 let currentUser = null;
 let currentRole = null;
@@ -3120,11 +3113,11 @@ window.loadTeacherSubmissions = async function (
 
       const link = document.createElement("a");
 
-      link.href = submission.fileURL;
+      link.href = submission.submissionLink;
       link.target = "_blank";
       link.rel = "noopener noreferrer";
       link.textContent =
-        "📄 Buka File Jawaban";
+        "📄 Buka Tugas Siswa";
 
       link.style.display = "inline-block";
       link.style.margin = "8px 0";
@@ -3358,33 +3351,34 @@ window.loadStudentAssignments = async function () {
 
         div.appendChild(status);
 
+        if (submission.submissionLink) {
 
-        if (submission.fileURL) {
+  const fileLink =
+    document.createElement("a");
 
-          const fileLink =
-            document.createElement("a");
+  fileLink.href =
+    submission.submissionLink;
 
-          fileLink.href =
-            submission.fileURL;
+  fileLink.target =
+    "_blank";
 
-          fileLink.target = "_blank";
+  fileLink.rel =
+    "noopener noreferrer";
 
-          fileLink.rel =
-            "noopener noreferrer";
+  fileLink.textContent =
+    "📄 Lihat Tugas yang Dikumpulkan";
 
-          fileLink.textContent =
-            "📄 Lihat File yang Dikumpulkan";
+  fileLink.style.display =
+    "inline-block";
 
-          fileLink.style.display =
-            "inline-block";
+  fileLink.style.marginBottom =
+    "10px";
 
-          fileLink.style.marginBottom =
-            "10px";
+  div.appendChild(
+    fileLink
+  );
 
-          div.appendChild(fileLink);
-
-        }
-
+}
 
         if (
           submission.grade !== null &&
@@ -3424,32 +3418,37 @@ window.loadStudentAssignments = async function () {
 
       else {
 
-        const fileInput =
-          document.createElement("input");
+const linkLabel =
+  document.createElement("label");
 
-        fileInput.type = "file";
+linkLabel.textContent =
+  "Link Google Drive Tugas";
 
-        fileInput.accept =
-          ".pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx,.jpg,.jpeg,.png";
+const linkInput =
+  document.createElement("input");
 
-        const uploadButton =
-          document.createElement("button");
+linkInput.type = "url";
+linkInput.placeholder =
+  "https://drive.google.com/...";
 
-        uploadButton.textContent =
-          "📤 Kumpulkan Tugas";
+const uploadButton =
+  document.createElement("button");
 
-        uploadButton.onclick =
-          () => submitAssignment(
-            item.id,
-            task.title,
-            fileInput
-          );
+uploadButton.textContent =
+  "📤 Kumpulkan Tugas";
 
-        div.append(
-          fileInput,
-          uploadButton
-        );
+uploadButton.onclick =
+  () => submitAssignment(
+    item.id,
+    task.title,
+    linkInput
+  );
 
+div.append(
+  linkLabel,
+  linkInput,
+  uploadButton
+);
       }
 
       host.appendChild(div);
@@ -3475,40 +3474,40 @@ window.loadStudentAssignments = async function () {
 
 };
 
-
 /* ===============================
-   SISWA: UPLOAD TUGAS
+   SISWA: KUMPULKAN TUGAS
    =============================== */
 
 window.submitAssignment =
 async function (
   assignmentId,
   assignmentTitle,
-  fileInput
+  linkInput
 ) {
 
-  if (!fileInput.files.length) {
+  const submissionLink =
+    linkInput.value.trim();
+
+  if (!submissionLink) {
 
     alert(
-      "Pilih file jawaban terlebih dahulu."
+      "Masukkan link Google Drive terlebih dahulu."
     );
 
     return;
 
   }
 
-  const file =
-    fileInput.files[0];
+  /* CEK LINK GOOGLE DRIVE */
 
-  /* BATASI UKURAN 10 MB */
-
-  const maxSize =
-    10 * 1024 * 1024;
-
-  if (file.size > maxSize) {
+  if (
+    !submissionLink.includes(
+      "drive.google.com"
+    )
+  ) {
 
     alert(
-      "Ukuran file maksimal 10 MB."
+      "Gunakan link file dari Google Drive."
     );
 
     return;
@@ -3516,33 +3515,6 @@ async function (
   }
 
   try {
-
-    const safeName =
-      file.name.replace(
-        /[^a-zA-Z0-9._-]/g,
-        "_"
-      );
-
-    const filePath =
-      "submissions/" +
-      currentUser.uid +
-      "/" +
-      Date.now() +
-      "_" +
-      safeName;
-
-    const storageRef =
-      ref(storage, filePath);
-
-    await uploadBytes(
-      storageRef,
-      file
-    );
-
-    const fileURL =
-      await getDownloadURL(
-        storageRef
-      );
 
     await addDoc(
       collection(db, "submissions"),
@@ -3563,14 +3535,8 @@ async function (
         studentEmail:
           currentUser.email,
 
-        fileName:
-          file.name,
-
-        filePath:
-          filePath,
-
-        fileURL:
-          fileURL,
+        submissionLink:
+          submissionLink,
 
         status:
           "Dikumpulkan",
@@ -3605,7 +3571,6 @@ async function (
   }
 
 };
-
 
 /* ===============================
    HELPER
