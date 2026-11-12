@@ -799,7 +799,6 @@ function message(text, type="error") {
 }
 
 function showApp(role, name, email) {
-
   currentRole = role;
   currentName = name;
   currentUser = auth.currentUser;
@@ -808,27 +807,45 @@ function showApp(role, name, email) {
   $("appPage").classList.remove("hidden");
 
   $("userLabel").textContent = name + " (" + email + ")";
+
+  const menus = {
+    admin: [
+      ["home", "🏠 Beranda"],
+      ["admin", "👥 Persetujuan Guru"]
+    ],
+    teacher: [
+      ["home", "🏠 Beranda"],
+      ["teacherMaterials", "📚 Kelola Materi"],
+      ["teacherQuestions", "📝 Kelola Kuis"],
+      ["teacherScores", "📊 Nilai Siswa"]
+    ],
+    student: [
+      ["home", "🏠 Beranda"],
+      ["studentMaterials", "📚 Materi Integral"],
+      ["studentQuestions", "📝 Kuis dan Latihan"]
+    ]
+  };
+
+  $("sidebarMenu").innerHTML = "";
+
+  menus[role].forEach(([page, label]) => {
+    const button = document.createElement("button");
+    button.textContent = label;
+    button.dataset.page = page;
+    button.onclick = () => navigatePage(page);
+    $("sidebarMenu").appendChild(button);
+  });
+
   $("welcomeTitle").textContent = "Halo, " + name + "!";
 
   $("welcomeText").textContent =
-    role === "admin" ? "Kelola akun pengguna IntegraLearn." :
-    role === "teacher" ? "Selamat datang di dashboard Guru." :
-    "Selamat belajar di IntegraLearn!";
+    role === "admin"
+      ? "Kelola akun pengguna IntegraLearn."
+      : role === "teacher"
+      ? "Selamat datang di dashboard Guru."
+      : "Selamat belajar di IntegraLearn!";
 
-  ["adminArea","teacherArea","studentArea"].forEach(id =>
-    $(id).classList.add("hidden")
-  );
-
-  if (role === "admin") {
-    $("adminArea").classList.remove("hidden");
-    loadAdminUsers();
-  } else if (role === "teacher") {
-    $("teacherArea").classList.remove("hidden");
-  } else {
-    $("studentArea").classList.remove("hidden");
-    loadStudentMaterials();
-    loadStudentQuestions();
-  }
+  navigatePage("home");
 }
 
 async function checkAccount(user) {
