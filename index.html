@@ -1012,21 +1012,42 @@ window.logout = async function() {
 
 };
 
-/* NAVIGASI PANEL */
+/* NAVIGASI HALAMAN */
 
-window.openPanel = function(id) {
+window.navigatePage = function(page) {
 
-  document.querySelectorAll(".panel").forEach(panel =>
-    panel.classList.add("hidden")
-  );
+  document.querySelectorAll(".page-section").forEach(section => {
+    section.classList.remove("active");
+  });
 
-  $(id).classList.remove("hidden");
+  const target = $("page-" + page);
 
-  if (id === "teacherMaterials") loadTeacherMaterials();
-  if (id === "teacherQuestions") loadTeacherQuestions();
-  if (id === "teacherScores") loadScores();
-  if (id === "studentMaterials") loadStudentMaterials();
-  if (id === "studentQuestions") loadStudentQuestions();
+  if (!target) return;
+
+  target.classList.add("active");
+
+  document.querySelectorAll("#sidebarMenu button").forEach(button => {
+    button.classList.toggle("active", button.dataset.page === page);
+  });
+
+  const titles = {
+    home: "Beranda",
+    admin: "Persetujuan Guru",
+    teacherMaterials: "Kelola Materi",
+    teacherQuestions: "Kelola Kuis",
+    teacherScores: "Nilai Siswa",
+    studentMaterials: "Materi Integral",
+    studentQuestions: "Kuis dan Latihan"
+  };
+
+  $("pageTitle").textContent = titles[page] || "IntegraLearn";
+
+  if (page === "admin") loadAdminUsers();
+  if (page === "teacherMaterials") loadTeacherMaterials();
+  if (page === "teacherQuestions") loadTeacherQuestions();
+  if (page === "teacherScores") loadScores();
+  if (page === "studentMaterials") loadStudentMaterials();
+  if (page === "studentQuestions") loadStudentQuestions();
 
 };
 
